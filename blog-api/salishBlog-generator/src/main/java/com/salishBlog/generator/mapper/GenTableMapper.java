@@ -2,13 +2,13 @@ package com.salishBlog.generator.mapper;
 
 import java.util.List;
 import com.salishBlog.generator.domain.GenTable;
-
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 /**
  * 业务 数据层
  *
- * @author ruoyi
+ * @author
  */
-public interface GenTableMapper
+public interface GenTableMapper extends BaseMapper<GenTable>
 {
     /**
      * 查询业务列表

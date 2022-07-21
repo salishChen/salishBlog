@@ -42,7 +42,7 @@ public class DictUtils
         JSONArray arrayCache = SpringUtils.getBean(RedisCache.class).getCacheObject(getCacheKey(key));
         if (StringUtils.isNotNull(arrayCache))
         {
-            return arrayCache.toList(SysDictData.class);
+            return arrayCache.toJavaList(SysDictData.class);
         }
         return null;
     }

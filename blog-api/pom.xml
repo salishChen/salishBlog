@@ -19,6 +19,7 @@
         <swagger.version>3.0.0</swagger.version>
         <kaptcha.version>2.3.2</kaptcha.version>
         <mybatis-spring-boot.version>2.2.2</mybatis-spring-boot.version>
+        <mybatis-plus.version>3.4.2</mybatis-plus.version>
         <pagehelper.boot.version>1.4.1</pagehelper.boot.version>
         <fastjson.version>2.0.9</fastjson.version>
         <oshi.version>6.2.1</oshi.version>
@@ -28,11 +29,29 @@
         <poi.version>4.1.2</poi.version>
         <velocity.version>2.3</velocity.version>
         <jwt.version>0.9.1</jwt.version>
+        <hutool.version>5.5.8</hutool.version>
+
     </properties>
 
     <!-- 依赖声明 -->
     <dependencyManagement>
         <dependencies>
+
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-boot-starter</artifactId>
+                <version>${mybatis-plus.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-extension</artifactId>
+                <version>${mybatis-plus.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-all</artifactId>
+                <version>${hutool.version}</version>
+            </dependency>
 
             <!-- SpringBoot的依赖配置-->
             <dependency>

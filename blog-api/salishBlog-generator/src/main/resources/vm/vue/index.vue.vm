@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="68px">
 #foreach($column in $columns)
 #if($column.query)
 #set($dictType=$column.dictType)
@@ -17,39 +17,41 @@
           v-model="queryParams.${column.javaField}"
           placeholder="请输入${comment}"
           clearable
+          size="small"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
 #elseif(($column.htmlType == "select" || $column.htmlType == "radio") && "" != $dictType)
       <el-form-item label="${comment}" prop="${column.javaField}">
-        <el-select v-model="queryParams.${column.javaField}" placeholder="请选择${comment}" clearable>
+        <el-select v-model="queryParams.${column.javaField}" placeholder="请选择${comment}" clearable size="small">
           <el-option
-            v-for="dict in dict.type.${dictType}"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
+            v-for="dict in ${column.javaField}Options"
+            :key="dict.dictValue"
+            :label="dict.dictLabel"
+            :value="dict.dictValue"
           />
         </el-select>
       </el-form-item>
 #elseif(($column.htmlType == "select" || $column.htmlType == "radio") && $dictType)
       <el-form-item label="${comment}" prop="${column.javaField}">
-        <el-select v-model="queryParams.${column.javaField}" placeholder="请选择${comment}" clearable>
+        <el-select v-model="queryParams.${column.javaField}" placeholder="请选择${comment}" clearable size="small">
           <el-option label="请选择字典生成" value="" />
         </el-select>
       </el-form-item>
 #elseif($column.htmlType == "datetime" && $column.queryType != "BETWEEN")
       <el-form-item label="${comment}" prop="${column.javaField}">
-        <el-date-picker clearable
+        <el-date-picker clearable size="small"
           v-model="queryParams.${column.javaField}"
           type="date"
           value-format="yyyy-MM-dd"
-          placeholder="请选择${comment}">
+          placeholder="选择${comment}">
         </el-date-picker>
       </el-form-item>
 #elseif($column.htmlType == "datetime" && $column.queryType == "BETWEEN")
       <el-form-item label="${comment}">
         <el-date-picker
           v-model="daterange${AttrName}"
+          size="small"
           style="width: 240px"
           value-format="yyyy-MM-dd"
           type="daterange"
@@ -124,29 +126,15 @@
 #set($comment=$column.columnComment)
 #end
 #if($column.pk)
-      <el-table-column label="${comment}" align="center" prop="${javaField}" />
+      <el-table-column label="${comment}" align="center" prop="${javaField}" v-if="${column.list}"/>
 #elseif($column.list && $column.htmlType == "datetime")
       <el-table-column label="${comment}" align="center" prop="${javaField}" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.${javaField}, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-#elseif($column.list && $column.htmlType == "imageUpload")
-      <el-table-column label="${comment}" align="center" prop="${javaField}" width="100">
-        <template slot-scope="scope">
-          <image-preview :src="scope.row.${javaField}" :width="50" :height="50"/>
-        </template>
-      </el-table-column>
 #elseif($column.list && "" != $column.dictType)
-      <el-table-column label="${comment}" align="center" prop="${javaField}">
-        <template slot-scope="scope">
-#if($column.htmlType == "checkbox")
-          <dict-tag :options="dict.type.${column.dictType}" :value="scope.row.${javaField} ? scope.row.${javaField}.split(',') : []"/>
-#else
-          <dict-tag :options="dict.type.${column.dictType}" :value="scope.row.${javaField}"/>
-#end
-        </template>
-      </el-table-column>
+      <el-table-column label="${comment}" align="center" prop="${javaField}" :formatter="${javaField}Format" />
 #elseif($column.list && "" != $javaField)
       <el-table-column label="${comment}" align="center" prop="${javaField}" />
 #end
@@ -199,11 +187,11 @@
         </el-form-item>
 #elseif($column.htmlType == "imageUpload")
         <el-form-item label="${comment}">
-          <image-upload v-model="form.${field}"/>
+          <imageUpload v-model="form.${field}"/>
         </el-form-item>
 #elseif($column.htmlType == "fileUpload")
         <el-form-item label="${comment}">
-          <file-upload v-model="form.${field}"/>
+          <fileUpload v-model="form.${field}"/>
         </el-form-item>
 #elseif($column.htmlType == "editor")
         <el-form-item label="${comment}">
@@ -213,10 +201,10 @@
         <el-form-item label="${comment}" prop="${field}">
           <el-select v-model="form.${field}" placeholder="请选择${comment}">
             <el-option
-              v-for="dict in dict.type.${dictType}"
-              :key="dict.value"
-              :label="dict.label"
-              #if($column.javaType == "Integer" || $column.javaType == "Long"):value="parseInt(dict.value)"#else:value="dict.value"#end
+              v-for="dict in ${field}Options"
+              :key="dict.dictValue"
+              :label="dict.dictLabel"
+              #if($column.javaType == "Integer" || $column.javaType == "Long"):value="parseInt(dict.dictValue)"#else:value="dict.dictValue"#end
 
             ></el-option>
           </el-select>
@@ -231,10 +219,10 @@
         <el-form-item label="${comment}">
           <el-checkbox-group v-model="form.${field}">
             <el-checkbox
-              v-for="dict in dict.type.${dictType}"
-              :key="dict.value"
-              :label="dict.value">
-              {{dict.label}}
+              v-for="dict in ${field}Options"
+              :key="dict.dictValue"
+              :label="dict.dictValue">
+              {{dict.dictLabel}}
             </el-checkbox>
           </el-checkbox-group>
         </el-form-item>
@@ -248,11 +236,11 @@
         <el-form-item label="${comment}">
           <el-radio-group v-model="form.${field}">
             <el-radio
-              v-for="dict in dict.type.${dictType}"
-              :key="dict.value"
-              #if($column.javaType == "Integer" || $column.javaType == "Long"):label="parseInt(dict.value)"#else:label="dict.value"#end
+              v-for="dict in ${field}Options"
+              :key="dict.dictValue"
+              #if($column.javaType == "Integer" || $column.javaType == "Long"):label="parseInt(dict.dictValue)"#else:label="dict.dictValue"#end
 
-            >{{dict.label}}</el-radio>
+            >{{dict.dictLabel}}</el-radio>
           </el-radio-group>
         </el-form-item>
 #elseif($column.htmlType == "radio" && $dictType)
@@ -263,11 +251,11 @@
         </el-form-item>
 #elseif($column.htmlType == "datetime")
         <el-form-item label="${comment}" prop="${field}">
-          <el-date-picker clearable
+          <el-date-picker clearable size="small"
             v-model="form.${field}"
-            type="date"
-            value-format="yyyy-MM-dd"
-            placeholder="请选择${comment}">
+            type="datetime"
+            value-format="yyyy-MM-dd HH:mm:ss"
+            placeholder="选择${comment}">
           </el-date-picker>
         </el-form-item>
 #elseif($column.htmlType == "textarea")
@@ -300,37 +288,10 @@
 #set($comment=$column.columnComment)
 #end
 #if($column.pk || $javaField == ${subTableFkclassName})
-#elseif($column.list && $column.htmlType == "input")
-          <el-table-column label="$comment" prop="${javaField}" width="150">
+#elseif($column.list && "" != $javaField)
+          <el-table-column label="$comment" prop="${javaField}">
             <template slot-scope="scope">
               <el-input v-model="scope.row.$javaField" placeholder="请输入$comment" />
-            </template>
-          </el-table-column>
-#elseif($column.list && $column.htmlType == "datetime")
-          <el-table-column label="$comment" prop="${javaField}" width="240">
-            <template slot-scope="scope">
-              <el-date-picker clearable v-model="scope.row.$javaField" type="date" value-format="yyyy-MM-dd" placeholder="请选择$comment" />
-            </template>
-          </el-table-column>
-#elseif($column.list && ($column.htmlType == "select" || $column.htmlType == "radio") && "" != $column.dictType)
-          <el-table-column label="$comment" prop="${javaField}" width="150">
-            <template slot-scope="scope">
-              <el-select v-model="scope.row.$javaField" placeholder="请选择$comment">
-                <el-option
-                  v-for="dict in dict.type.$column.dictType"
-                  :key="dict.value"
-                  :label="dict.label"
-                  :value="dict.value"
-                ></el-option>
-              </el-select>
-            </template>
-          </el-table-column>
-#elseif($column.list && ($column.htmlType == "select" || $column.htmlType == "radio") && "" == $column.dictType)
-          <el-table-column label="$comment" prop="${javaField}" width="150">
-            <template slot-scope="scope">
-              <el-select v-model="scope.row.$javaField" placeholder="请选择$comment">
-                <el-option label="请选择字典生成" value="" />
-              </el-select>
             </template>
           </el-table-column>
 #end
@@ -347,13 +308,48 @@
 </template>
 
 <script>
-import { list${BusinessName}, get${BusinessName}, del${BusinessName}, add${BusinessName}, update${BusinessName} } from "@/api/${moduleName}/${businessName}";
+import { list${BusinessName}, get${BusinessName}, del${BusinessName}, add${BusinessName}, update${BusinessName}, export${BusinessName} } from "@/api/${moduleName}/${businessName}";
+#foreach($column in $columns)
+#if($column.insert && !$column.superColumn && !$column.pk && $column.htmlType == "imageUpload")
+import ImageUpload from '@/components/ImageUpload';
+#break
+#end
+#end
+#foreach($column in $columns)
+#if($column.insert && !$column.superColumn && !$column.pk && $column.htmlType == "fileUpload")
+import FileUpload from '@/components/FileUpload';
+#break
+#end
+#end
+#foreach($column in $columns)
+#if($column.insert && !$column.superColumn && !$column.pk && $column.htmlType == "editor")
+import Editor from '@/components/Editor';
+#break
+#end
+#end
 
 export default {
   name: "${BusinessName}",
-#if(${dicts} != '')
-  dicts: [${dicts}],
+  components: {
+#foreach($column in $columns)
+#if($column.insert && !$column.superColumn && !$column.pk && $column.htmlType == "imageUpload")
+    ImageUpload,
+#break
 #end
+#end
+#foreach($column in $columns)
+#if($column.insert && !$column.superColumn && !$column.pk && $column.htmlType == "fileUpload")
+    FileUpload,
+#break
+#end
+#end
+#foreach($column in $columns)
+#if($column.insert && !$column.superColumn && !$column.pk && $column.htmlType == "editor")
+    Editor,
+#break
+#end
+#end
+  },
   data() {
     return {
       // 遮罩层
@@ -383,7 +379,16 @@ export default {
       // 是否显示弹出层
       open: false,
 #foreach ($column in $columns)
-#if($column.htmlType == "datetime" && $column.queryType == "BETWEEN")
+#set($parentheseIndex=$column.columnComment.indexOf("（"))
+#if($parentheseIndex != -1)
+#set($comment=$column.columnComment.substring(0, $parentheseIndex))
+#else
+#set($comment=$column.columnComment)
+#end
+#if(${column.dictType} != '')
+      // $comment字典
+      ${column.javaField}Options: [],
+#elseif($column.htmlType == "datetime" && $column.queryType == "BETWEEN")
 #set($AttrName=$column.javaField.substring(0,1).toUpperCase() + ${column.javaField.substring(1)})
       // $comment时间范围
       daterange${AttrName}: [],
@@ -395,7 +400,8 @@ export default {
         pageSize: 10,
 #foreach ($column in $columns)
 #if($column.query)
-        $column.javaField: null#if($foreach.count != $columns.size()),#end
+        $column.javaField: undefined#if($velocityCount != $columns.size()),#end
+
 #end
 #end
       },
@@ -413,7 +419,8 @@ export default {
 #end
         $column.javaField: [
           { required: true, message: "$comment不能为空", trigger: #if($column.htmlType == "select")"change"#else"blur"#end }
-        ]#if($foreach.count != $columns.size()),#end
+        ]#if($velocityCount != $columns.size()),#end
+
 #end
 #end
       }
@@ -421,6 +428,13 @@ export default {
   },
   created() {
     this.getList();
+#foreach ($column in $columns)
+#if(${column.dictType} != '')
+    this.getDicts("${column.dictType}").then(response => {
+      this.${column.javaField}Options = response.data;
+    });
+#end
+#end
   },
   methods: {
     /** 查询${functionName}列表 */
@@ -447,6 +461,20 @@ export default {
         this.loading = false;
       });
     },
+#foreach ($column in $columns)
+#if(${column.dictType} != '')
+#set($parentheseIndex=$column.columnComment.indexOf("（"))
+#if($parentheseIndex != -1)
+#set($comment=$column.columnComment.substring(0, $parentheseIndex))
+#else
+#set($comment=$column.columnComment)
+#end
+    // $comment字典翻译
+    ${column.javaField}Format(row, column) {
+      return this.selectDictLabel#if($column.htmlType == "checkbox")s#end(this.${column.javaField}Options, row.${column.javaField});
+    },
+#end
+#end
     // 取消按钮
     cancel() {
       this.open = false;
@@ -457,11 +485,14 @@ export default {
       this.form = {
 #foreach ($column in $columns)
 #if($column.htmlType == "radio")
-        $column.javaField: #if($column.javaType == "Integer" || $column.javaType == "Long")0#else"0"#end#if($foreach.count != $columns.size()),#end
+        $column.javaField: #if($column.javaType == "Integer" || $column.javaType == "Long")0#else"0"#end#if($velocityCount != $columns.size()),#end
+
 #elseif($column.htmlType == "checkbox")
-        $column.javaField: []#if($foreach.count != $columns.size()),#end
+        $column.javaField: []#if($velocityCount != $columns.size()),#end
+
 #else
-        $column.javaField: null#if($foreach.count != $columns.size()),#end
+        $column.javaField: undefined#if($velocityCount != $columns.size()),#end
+
 #end
 #end
       };
@@ -530,13 +561,13 @@ export default {
 #end
           if (this.form.${pkColumn.javaField} != null) {
             update${BusinessName}(this.form).then(response => {
-              this.#[[$modal]]#.msgSuccess("修改成功");
+              this.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
             add${BusinessName}(this.form).then(response => {
-              this.#[[$modal]]#.msgSuccess("新增成功");
+              this.msgSuccess("新增成功");
               this.open = false;
               this.getList();
             });
@@ -547,12 +578,16 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ${pkColumn.javaField}s = row.${pkColumn.javaField} || this.ids;
-      this.#[[$modal]]#.confirm('是否确认删除${functionName}编号为"' + ${pkColumn.javaField}s + '"的数据项？').then(function() {
-        return del${BusinessName}(${pkColumn.javaField}s);
-      }).then(() => {
-        this.getList();
-        this.#[[$modal]]#.msgSuccess("删除成功");
-      }).catch(() => {});
+      this.$confirm('是否确认删除${functionName}编号为"' + ${pkColumn.javaField}s + '"的数据项?', "警告", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        }).then(function() {
+          return del${BusinessName}(${pkColumn.javaField}s);
+        }).then(() => {
+          this.getList();
+          this.msgSuccess("删除成功");
+        })
     },
 #if($table.sub)
 	/** ${subTable.functionName}序号 */
@@ -573,25 +608,33 @@ export default {
     /** ${subTable.functionName}删除按钮操作 */
     handleDelete${subClassName}() {
       if (this.checked${subClassName}.length == 0) {
-        this.#[[$modal]]#.msgError("请先选择要删除的${subTable.functionName}数据");
+        this.$alert("请先选择要删除的${subTable.functionName}数据", "提示", { confirmButtonText: "确定", });
       } else {
-        const ${subclassName}List = this.${subclassName}List;
-        const checked${subClassName} = this.checked${subClassName};
-        this.${subclassName}List = ${subclassName}List.filter(function(item) {
-          return checked${subClassName}.indexOf(item.index) == -1
-        });
+        this.${subclassName}List.splice(this.checked${subClassName}[0].index - 1, 1);
       }
     },
-    /** 复选框选中数据 */
+    /** 单选框选中数据 */
     handle${subClassName}SelectionChange(selection) {
-      this.checked${subClassName} = selection.map(item => item.index)
+      if (selection.length > 1) {
+        this.$refs.${subclassName}.clearSelection();
+        this.$refs.${subclassName}.toggleRowSelection(selection.pop());
+      } else {
+        this.checked${subClassName} = selection;
+      }
     },
 #end
     /** 导出按钮操作 */
     handleExport() {
-      this.download('${moduleName}/${businessName}/export', {
-        ...this.queryParams
-      }, `${businessName}_#[[${new Date().getTime()}]]#.xlsx`)
+      const queryParams = this.queryParams;
+      this.$confirm('是否确认导出所有${functionName}数据项?', "警告", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        }).then(function() {
+          return export${BusinessName}(queryParams);
+        }).then(response => {
+          this.download(response.msg);
+        })
     }
   }
 };

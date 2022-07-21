@@ -1,22 +1,29 @@
 package com.salishBlog.generator.service;
 
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import com.salishBlog.common.core.text.Convert;
+
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.salishBlog.generator.domain.GenTable;
 import com.salishBlog.generator.domain.GenTableColumn;
 import com.salishBlog.generator.mapper.GenTableColumnMapper;
+import com.salishBlog.generator.mapper.GenTableMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import cn.hutool.core.convert.Convert;
 
 /**
  * 业务字段 服务层实现
  *
- * @author ruoyi
+ * @author
  */
 @Service
-public class GenTableColumnServiceImpl implements IGenTableColumnService
+public class GenTableColumnServiceImpl extends ServiceImpl<GenTableColumnMapper, GenTableColumn> implements IGenTableColumnService
 {
-	@Autowired
-	private GenTableColumnMapper genTableColumnMapper;
+
+	@Override
+	public List<GenTableColumn> selectDbTableColumnsByName(String tableName) {
+		return this.baseMapper.selectDbTableColumnsByName(tableName);
+	}
 
 	/**
      * 查询业务字段列表
@@ -27,7 +34,7 @@ public class GenTableColumnServiceImpl implements IGenTableColumnService
 	@Override
 	public List<GenTableColumn> selectGenTableColumnListByTableId(Long tableId)
 	{
-	    return genTableColumnMapper.selectGenTableColumnListByTableId(tableId);
+	    return this.baseMapper.selectGenTableColumnListByTableId(tableId);
 	}
 
     /**
@@ -39,7 +46,7 @@ public class GenTableColumnServiceImpl implements IGenTableColumnService
 	@Override
 	public int insertGenTableColumn(GenTableColumn genTableColumn)
 	{
-	    return genTableColumnMapper.insertGenTableColumn(genTableColumn);
+	    return this.baseMapper.insertGenTableColumn(genTableColumn);
 	}
 
 	/**
@@ -51,7 +58,12 @@ public class GenTableColumnServiceImpl implements IGenTableColumnService
 	@Override
 	public int updateGenTableColumn(GenTableColumn genTableColumn)
 	{
-	    return genTableColumnMapper.updateGenTableColumn(genTableColumn);
+	    return this.baseMapper.updateGenTableColumn(genTableColumn);
+	}
+
+	@Override
+	public int deleteGenTableColumns(List<GenTableColumn> genTableColumns) {
+		return this.baseMapper.deleteGenTableColumns(genTableColumns);
 	}
 
 	/**
@@ -63,6 +75,6 @@ public class GenTableColumnServiceImpl implements IGenTableColumnService
 	@Override
 	public int deleteGenTableColumnByIds(String ids)
 	{
-		return genTableColumnMapper.deleteGenTableColumnByIds(Convert.toLongArray(ids));
+		return this.baseMapper.deleteGenTableColumnByIds(Convert.toLongArray(ids));
 	}
 }

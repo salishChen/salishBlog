@@ -1,0 +1,40 @@
+package ${packageName}.domain.entity.bo;
+
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Data;
+import java.util.Date;
+
+#foreach ($import in $importList)
+import ${import};
+#end
+
+/**
+ * ${functionName}编辑对象 ${tableName}
+ *
+ * @author ${author}
+ * @date ${datetime}
+ */
+@Data
+@ApiModel("${functionName}编辑对象")
+public class ${ClassName}EditBo {
+
+#foreach ($column in $columns)
+#if($column.isEdit || $column.isPk==1)
+
+    /** $column.columnComment */
+    @ApiModelProperty("$column.columnComment")
+#if($column.javaType == 'Date')
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+#end
+    private $column.javaType $column.javaField;
+#end
+#end
+#if($table.sub)
+
+    /** $table.subTable.functionName信息 */
+    @ApiModelProperty("$table.subTable.functionName")
+    private List<${subClassName}> ${subclassName}List;
+#end
+}

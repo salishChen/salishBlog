@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.salishBlog.business.mapper.TTagMapper">
+
+    <resultMap type="com.salishBlog.business.domain.TTag" id="TTagResult">
+        <result property="id" column="id"/>
+        <result property="tag" column="tag"/>
+        <result property="tagColor" column="tag_color"/>
+        <result property="times" column="times"/>
+    </resultMap>
+
+
+</mapper>

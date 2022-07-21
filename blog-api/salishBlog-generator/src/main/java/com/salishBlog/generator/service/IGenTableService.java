@@ -2,12 +2,13 @@ package com.salishBlog.generator.service;
 
 import java.util.List;
 import java.util.Map;
+
 import com.salishBlog.generator.domain.GenTable;
 
 /**
  * 业务 服务层
  *
- * @author ruoyi
+ * @author
  */
 public interface IGenTableService
 {

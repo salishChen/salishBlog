@@ -5,6 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
+
+import com.salishBlog.common.core.text.Convert;
+import com.salishBlog.generator.domain.GenTable;
+import com.salishBlog.generator.domain.GenTableColumn;
+import com.salishBlog.generator.service.IGenTableService;
+import com.salishBlog.generator.service.IGenTableColumnService;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,17 +27,12 @@ import com.salishBlog.common.annotation.Log;
 import com.salishBlog.common.core.controller.BaseController;
 import com.salishBlog.common.core.domain.AjaxResult;
 import com.salishBlog.common.core.page.TableDataInfo;
-import com.salishBlog.common.core.text.Convert;
 import com.salishBlog.common.enums.BusinessType;
-import com.salishBlog.generator.domain.GenTable;
-import com.salishBlog.generator.domain.GenTableColumn;
-import com.salishBlog.generator.service.IGenTableColumnService;
-import com.salishBlog.generator.service.IGenTableService;
 
 /**
  * 代码生成 操作处理
  *
- * @author ruoyi
+ * @author
  */
 @RestController
 @RequestMapping("/tool/gen")
@@ -59,12 +60,12 @@ public class GenController extends BaseController
      * 修改代码生成业务
      */
     @PreAuthorize("@ss.hasPermi('tool:gen:query')")
-    @GetMapping(value = "/{tableId}")
-    public AjaxResult getInfo(@PathVariable Long tableId)
+    @GetMapping(value = "/{talbleId}")
+    public AjaxResult getInfo(@PathVariable Long talbleId)
     {
-        GenTable table = genTableService.selectGenTableById(tableId);
+        GenTable table = genTableService.selectGenTableById(talbleId);
         List<GenTable> tables = genTableService.selectGenTableAll();
-        List<GenTableColumn> list = genTableColumnService.selectGenTableColumnListByTableId(tableId);
+        List<GenTableColumn> list = genTableColumnService.selectGenTableColumnListByTableId(talbleId);
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("info", table);
         map.put("rows", list);
@@ -88,7 +89,7 @@ public class GenController extends BaseController
      * 查询数据表字段列表
      */
     @PreAuthorize("@ss.hasPermi('tool:gen:list')")
-    @GetMapping(value = "/column/{tableId}")
+    @GetMapping(value = "/column/{talbleId}")
     public TableDataInfo columnList(Long tableId)
     {
         TableDataInfo dataInfo = new TableDataInfo();
@@ -101,7 +102,7 @@ public class GenController extends BaseController
     /**
      * 导入表结构（保存）
      */
-    @PreAuthorize("@ss.hasPermi('tool:gen:import')")
+    @PreAuthorize("@ss.hasPermi('tool:gen:list')")
     @Log(title = "代码生成", businessType = BusinessType.IMPORT)
     @PostMapping("/importTable")
     public AjaxResult importTableSave(String tables)
@@ -206,7 +207,7 @@ public class GenController extends BaseController
         response.reset();
         response.addHeader("Access-Control-Allow-Origin", "*");
         response.addHeader("Access-Control-Expose-Headers", "Content-Disposition");
-        response.setHeader("Content-Disposition", "attachment; filename=\"ruoyi.zip\"");
+        response.setHeader("Content-Disposition", "attachment; filename=\"mall.zip\"");
         response.addHeader("Content-Length", "" + data.length);
         response.setContentType("application/octet-stream; charset=UTF-8");
         IOUtils.write(data, response.getOutputStream());

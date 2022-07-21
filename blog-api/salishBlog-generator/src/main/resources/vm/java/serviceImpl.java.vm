@@ -1,23 +1,24 @@
 package ${packageName}.service.impl;
 
-import java.util.List;
-#foreach ($column in $columns)
-#if($column.javaField == 'createTime' || $column.javaField == 'updateTime')
-import com.salishBlog.common.utils.DateUtils;
-#break
-#end
-#end
-import org.springframework.beans.factory.annotation.Autowired;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.StrUtil;
 import org.springframework.stereotype.Service;
-#if($table.sub)
-import java.util.ArrayList;
-import com.salishBlog.common.utils.StringUtils;
-import org.springframework.transaction.annotation.Transactional;
-import ${packageName}.domain.${subClassName};
-#end
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.github.pagehelper.Page;
+import ${packageName}.entity.bo.${ClassName}AddBo;
+import ${packageName}.entity.bo.${ClassName}QueryBo;
+import ${packageName}.entity.bo.${ClassName}EditBo;
+import ${packageName}.entity.${ClassName};
 import ${packageName}.mapper.${ClassName}Mapper;
-import ${packageName}.domain.${ClassName};
+import ${packageName}.entity.vo.${ClassName}Vo;
 import ${packageName}.service.I${ClassName}Service;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * ${functionName}Service业务层处理
@@ -26,144 +27,93 @@ import ${packageName}.service.I${ClassName}Service;
  * @date ${datetime}
  */
 @Service
-public class ${ClassName}ServiceImpl implements I${ClassName}Service
-{
-    @Autowired
-    private ${ClassName}Mapper ${className}Mapper;
+public class ${ClassName}ServiceImpl extends ServiceImpl<${ClassName}Mapper, ${ClassName}> implements I${ClassName}Service {
 
-    /**
-     * 查询${functionName}
-     *
-     * @param ${pkColumn.javaField} ${functionName}主键
-     * @return ${functionName}
-     */
     @Override
-    public ${ClassName} select${ClassName}By${pkColumn.capJavaField}(${pkColumn.javaType} ${pkColumn.javaField})
-    {
-        return ${className}Mapper.select${ClassName}By${pkColumn.capJavaField}(${pkColumn.javaField});
+    public ${ClassName}Vo queryById(${pkColumn.javaType} ${pkColumn.javaField}){
+        ${ClassName} db = this.baseMapper.selectById(${pkColumn.javaField});
+        return BeanUtil.toBean(db, ${ClassName}Vo.class);
     }
 
-    /**
-     * 查询${functionName}列表
-     *
-     * @param ${className} ${functionName}
-     * @return ${functionName}
-     */
     @Override
-    public List<${ClassName}> select${ClassName}List(${ClassName} ${className})
-    {
-        return ${className}Mapper.select${ClassName}List(${className});
-    }
-
-    /**
-     * 新增${functionName}
-     *
-     * @param ${className} ${functionName}
-     * @return 结果
-     */
-#if($table.sub)
-    @Transactional
-#end
-    @Override
-    public int insert${ClassName}(${ClassName} ${className})
-    {
-#foreach ($column in $columns)
-#if($column.javaField == 'createTime')
-        ${className}.setCreateTime(DateUtils.getNowDate());
-#end
-#end
-#if($table.sub)
-        int rows = ${className}Mapper.insert${ClassName}(${className});
-        insert${subClassName}(${className});
-        return rows;
+    public List<${ClassName}Vo> queryList(${ClassName}QueryBo bo) {
+        LambdaQueryWrapper<${ClassName}> lqw = Wrappers.lambdaQuery();
+#foreach($column in $columns)
+#if($column.query)
+#set($queryType=$column.queryType)
+#set($javaField=$column.javaField)
+#set($javaType=$column.javaType)
+#set($columnName=$column.columnName)
+#set($AttrName=$column.javaField.substring(0,1).toUpperCase() + ${column.javaField.substring(1)})
+#set($mpMethod=$column.queryType.toLowerCase())
+#if($queryType != 'BETWEEN')
+#if($javaType == 'String')
+#set($condition='StrUtil.isNotBlank(bo.get'+$AttrName+'())')
 #else
-        return ${className}Mapper.insert${ClassName}(${className});
+#set($condition='bo.get'+$AttrName+'() != null')
 #end
-    }
-
-    /**
-     * 修改${functionName}
-     *
-     * @param ${className} ${functionName}
-     * @return 结果
-     */
-#if($table.sub)
-    @Transactional
-#end
-    @Override
-    public int update${ClassName}(${ClassName} ${className})
-    {
-#foreach ($column in $columns)
-#if($column.javaField == 'updateTime')
-        ${className}.setUpdateTime(DateUtils.getNowDate());
-#end
-#end
-#if($table.sub)
-        ${className}Mapper.delete${subClassName}By${subTableFkClassName}(${className}.get${pkColumn.capJavaField}());
-        insert${subClassName}(${className});
-#end
-        return ${className}Mapper.update${ClassName}(${className});
-    }
-
-    /**
-     * 批量删除${functionName}
-     *
-     * @param ${pkColumn.javaField}s 需要删除的${functionName}主键
-     * @return 结果
-     */
-#if($table.sub)
-    @Transactional
-#end
-    @Override
-    public int delete${ClassName}By${pkColumn.capJavaField}s(${pkColumn.javaType}[] ${pkColumn.javaField}s)
-    {
-#if($table.sub)
-        ${className}Mapper.delete${subClassName}By${subTableFkClassName}s(${pkColumn.javaField}s);
-#end
-        return ${className}Mapper.delete${ClassName}By${pkColumn.capJavaField}s(${pkColumn.javaField}s);
-    }
-
-    /**
-     * 删除${functionName}信息
-     *
-     * @param ${pkColumn.javaField} ${functionName}主键
-     * @return 结果
-     */
-#if($table.sub)
-    @Transactional
-#end
-    @Override
-    public int delete${ClassName}By${pkColumn.capJavaField}(${pkColumn.javaType} ${pkColumn.javaField})
-    {
-#if($table.sub)
-        ${className}Mapper.delete${subClassName}By${subTableFkClassName}(${pkColumn.javaField});
-#end
-        return ${className}Mapper.delete${ClassName}By${pkColumn.capJavaField}(${pkColumn.javaField});
-    }
-#if($table.sub)
-
-    /**
-     * 新增${subTable.functionName}信息
-     *
-     * @param ${className} ${functionName}对象
-     */
-    public void insert${subClassName}(${ClassName} ${className})
-    {
-        List<${subClassName}> ${subclassName}List = ${className}.get${subClassName}List();
-        ${pkColumn.javaType} ${pkColumn.javaField} = ${className}.get${pkColumn.capJavaField}();
-        if (StringUtils.isNotNull(${subclassName}List))
-        {
-            List<${subClassName}> list = new ArrayList<${subClassName}>();
-            for (${subClassName} ${subclassName} : ${subclassName}List)
-            {
-                ${subclassName}.set${subTableFkClassName}(${pkColumn.javaField});
-                list.add(${subclassName});
-            }
-            if (list.size() > 0)
-            {
-                ${className}Mapper.batch${subClassName}(list);
-            }
+        lqw.$mpMethod($condition, ${ClassName}::get$AttrName, bo.get$AttrName());
+#else
+        Object dataScope = bo.getParams().get("dataScope");
+        lqw.apply(dataScope != null, dataScope != null ? dataScope.toString() : null);
+        Map<String, Object> params = bo.getParams();
+        if (params.get("begin$AttrName") != null && params.get("end$AttrName") != null) {
+            lqw.between(${ClassName}::get$AttrName ,params.get("begin$AttrName"), params.get("end$AttrName"));
         }
-    }
 #end
+#end
+#end
+        return entity2Vo(this.list(lqw));
+    }
+
+    /**
+    * 实体类转化成视图对象
+    *
+    * @param collection 实体类集合
+    * @return
+    */
+    private List<${ClassName}Vo> entity2Vo(Collection<${ClassName}> collection) {
+        List<${ClassName}Vo> voList = collection.stream()
+                .map(any -> BeanUtil.toBean(any, ${ClassName}Vo.class))
+                .collect(Collectors.toList());
+        if (collection instanceof Page) {
+            Page<${ClassName}> page = (Page<${ClassName}>)collection;
+            Page<${ClassName}Vo> pageVo = new Page<>();
+            BeanUtil.copyProperties(page,pageVo);
+            pageVo.addAll(voList);
+            voList = pageVo;
+        }
+        return voList;
+    }
+
+    @Override
+    public Boolean insertByAddBo(${ClassName}AddBo bo) {
+        ${ClassName} add = BeanUtil.toBean(bo, ${ClassName}.class);
+        validEntityBeforeSave(add);
+        return this.save(add);
+    }
+
+    @Override
+    public Boolean updateByEditBo(${ClassName}EditBo bo) {
+        ${ClassName} update = BeanUtil.toBean(bo, ${ClassName}.class);
+        validEntityBeforeSave(update);
+        return this.updateById(update);
+    }
+
+    /**
+     * 保存前的数据校验
+     *
+     * @param entity 实体类数据
+     */
+    private void validEntityBeforeSave(${ClassName} entity){
+        //TODO 做一些数据校验,如唯一约束
+    }
+
+    @Override
+    public Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid) {
+        if(isValid){
+            //TODO 做一些业务上的校验,判断是否需要校验
+        }
+        return this.removeByIds(ids);
+    }
 }

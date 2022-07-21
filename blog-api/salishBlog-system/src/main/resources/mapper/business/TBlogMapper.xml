@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.salishBlog.business.mapper.TBlogMapper">
+
+    <resultMap type="com.salishBlog.business.domain.TBlog" id="TBlogResult">
+        <result property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="cover" column="cover"/>
+        <result property="summary" column="summary"/>
+        <result property="content" column="content"/>
+        <result property="tagId" column="tag_id"/>
+        <result property="blogType" column="blog_type"/>
+        <result property="contentType" column="content_type"/>
+        <result property="createTime" column="create_time"/>
+        <result property="createBy" column="create_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="isDelete" column="is_delete"/>
+    </resultMap>
+
+
+</mapper>
