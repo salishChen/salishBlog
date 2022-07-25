@@ -24,7 +24,7 @@ private static final long serialVersionUID=1L;
 
 
     /** 标签id */
-    @TableId(value = "id")
+    @TableId(type = IdType.AUTO)
     private Long id;
 
     /** 标签 */

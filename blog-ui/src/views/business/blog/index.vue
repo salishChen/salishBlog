@@ -104,34 +104,6 @@
       :limit.sync="queryParams.pageSize"
       @pagination="getList"
     />
-
-    <!-- 添加或修改博客对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="标题" prop="title">
-          <el-input v-model="form.title" type="textarea" placeholder="请输入内容" />
-        </el-form-item>
-        <el-form-item label="封面" prop="cover">
-          <el-input v-model="form.cover" placeholder="请输入封面" />
-        </el-form-item>
-        <el-form-item label="简介" prop="summary">
-          <el-input v-model="form.summary" placeholder="请输入简介" />
-        </el-form-item>
-        <el-form-item label="内容">
-          <editor v-model="form.content" :min-height="192"/>
-        </el-form-item>
-        <el-form-item label="标签id" prop="tagId">
-          <el-input v-model="form.tagId" placeholder="请输入标签id" />
-        </el-form-item>
-        <el-form-item label="是否删除" prop="isDelete">
-          <el-input v-model="form.isDelete" placeholder="请输入是否删除" />
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm">确 定</el-button>
-        <el-button @click="cancel">取 消</el-button>
-      </div>
-    </el-dialog>
   </div>
 </template>
 
@@ -160,20 +132,6 @@ export default {
       total: 0,
       // 博客表格数据
       blogList: [],
-      // 弹出层标题
-      title: "",
-      // 是否显示弹出层
-      open: false,
-      // 博客id字典
-      idOptions: [],
-      // 创建时间字典
-      createTimeOptions: [],
-      // 创建人字典
-      createByOptions: [],
-      // 更新时间字典
-      updateTimeOptions: [],
-      // 更新人字典
-      updateByOptions: [],
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -181,30 +139,10 @@ export default {
         title: undefined,
         tagId: undefined,
       },
-      // 表单参数
-      form: {},
-      // 表单校验
-      rules: {
-      }
     };
   },
   created() {
     this.getList();
-    this.getDicts("${column.dictType}").then(response => {
-      this.idOptions = response.data;
-    });
-    this.getDicts("${column.dictType}").then(response => {
-      this.createTimeOptions = response.data;
-    });
-    this.getDicts("${column.dictType}").then(response => {
-      this.createByOptions = response.data;
-    });
-    this.getDicts("${column.dictType}").then(response => {
-      this.updateTimeOptions = response.data;
-    });
-    this.getDicts("${column.dictType}").then(response => {
-      this.updateByOptions = response.data;
-    });
   },
   methods: {
     /** 查询博客列表 */
@@ -216,26 +154,6 @@ export default {
         this.loading = false;
       });
     },
-    // 博客id字典翻译
-    idFormat(row, column) {
-      return this.selectDictLabel(this.idOptions, row.id);
-    },
-    // 创建时间字典翻译
-    createTimeFormat(row, column) {
-      return this.selectDictLabel(this.createTimeOptions, row.createTime);
-    },
-    // 创建人字典翻译
-    createByFormat(row, column) {
-      return this.selectDictLabel(this.createByOptions, row.createBy);
-    },
-    // 更新时间字典翻译
-    updateTimeFormat(row, column) {
-      return this.selectDictLabel(this.updateTimeOptions, row.updateTime);
-    },
-    // 更新人字典翻译
-    updateByFormat(row, column) {
-      return this.selectDictLabel(this.updateByOptions, row.updateBy);
-    },
     // 取消按钮
     cancel() {
       this.open = false;
@@ -245,31 +163,18 @@ export default {
     reset() {
       this.form = {
         id: undefined,
-
         title: undefined,
-
         cover: undefined,
-
         summary: undefined,
-
         content: undefined,
-
         tagId: undefined,
-
         blogType: undefined,
-
         contentType: undefined,
-
         createTime: undefined,
-
         createBy: undefined,
-
         updateTime: undefined,
-
         updateBy: undefined,
-
         isDelete: undefined,
-
       };
       this.resetForm("form");
     },
@@ -291,39 +196,13 @@ export default {
     },
     /** 新增按钮操作 */
     handleAdd() {
-      this.reset();
-      this.open = true;
-      this.title = "添加博客";
+      this.$router.push({ path: "/blogs/editBlog"});
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
       const id = row.id || this.ids
-      getBlog(id).then(response => {
-        this.form = response.data;
-        this.open = true;
-        this.title = "修改博客";
-      });
-    },
-    /** 提交按钮 */
-    submitForm() {
-      this.$refs["form"].validate(valid => {
-        if (valid) {
-          if (this.form.id != null) {
-            updateBlog(this.form).then(response => {
-              this.msgSuccess("修改成功");
-              this.open = false;
-              this.getList();
-            });
-          } else {
-            addBlog(this.form).then(response => {
-              this.msgSuccess("新增成功");
-              this.open = false;
-              this.getList();
-            });
-          }
-        }
-      });
+      this.$router.push({ path: "/blogs/editBlog",query:{id:id}});
     },
     /** 删除按钮操作 */
     handleDelete(row) {

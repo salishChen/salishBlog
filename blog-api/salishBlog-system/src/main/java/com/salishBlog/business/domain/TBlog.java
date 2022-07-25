@@ -24,7 +24,7 @@ private static final long serialVersionUID=1L;
 
 
     /** 博客id */
-    @TableId(value = "id")
+    @TableId(value = "id",type = IdType.AUTO)
     private Long id;
 
     /** 标题 */

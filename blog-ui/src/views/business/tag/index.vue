@@ -64,9 +64,12 @@
 
     <el-table v-loading="loading" :data="tagList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="标签id" align="center" prop="id" v-if="false"/>
       <el-table-column label="标签" align="center" prop="tag" />
-      <el-table-column label="标签色彩" align="center" prop="tagColor" />
+      <el-table-column label="标签色彩" align="center" prop="tagColor" >
+        <template slot-scope="scope">
+          <div :style="{backgroundColor:scope.row.tagColor,width:'25px',height:'25px',display:'inline-block'}"></div>
+        </template>
+      </el-table-column>
       <el-table-column label="访问次数" align="center" prop="times" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.times, '{y}-{m}-{d}') }}</span>
@@ -107,15 +110,11 @@
           <el-input v-model="form.tag" placeholder="请输入标签" />
         </el-form-item>
         <el-form-item label="标签色彩" prop="tagColor">
-          <el-input v-model="form.tagColor" placeholder="请输入标签色彩" />
-        </el-form-item>
-        <el-form-item label="访问次数" prop="times">
-          <el-date-picker clearable size="small"
-            v-model="form.times"
-            type="datetime"
-            value-format="yyyy-MM-dd HH:mm:ss"
-            placeholder="选择访问次数">
-          </el-date-picker>
+          <el-color-picker
+            v-model="form.tagColor"
+            show-alpha
+            :predefine="predefineColors">
+          </el-color-picker>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -158,17 +157,30 @@ export default {
         pageNum: 1,
         pageSize: 10,
         tag: undefined,
-
         tagColor: undefined,
-
         times: undefined,
-
       },
       // 表单参数
       form: {},
       // 表单校验
       rules: {
-      }
+      },
+      predefineColors: [
+        '#ff4500',
+        '#ff8c00',
+        '#ffd700',
+        '#90ee90',
+        '#00ced1',
+        '#1e90ff',
+        '#c71585',
+        'rgba(255, 69, 0, 0.68)',
+        'rgb(255, 120, 0)',
+        'hsv(51, 100, 98)',
+        'hsva(120, 40, 94, 0.5)',
+        'hsl(181, 100%, 37%)',
+        'hsla(209, 100%, 56%, 0.73)',
+        '#c7158577'
+      ]
     };
   },
   created() {

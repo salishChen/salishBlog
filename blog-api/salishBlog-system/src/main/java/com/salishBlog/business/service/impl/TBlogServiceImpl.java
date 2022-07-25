@@ -38,7 +38,7 @@ public class TBlogServiceImpl extends ServiceImpl<TBlogMapper, TBlog> implements
     @Override
     public List<TBlogVo> queryList(TBlogQueryBo bo) {
         LambdaQueryWrapper<TBlog> lqw = Wrappers.lambdaQuery();
-        lqw.eq(StrUtil.isNotBlank(bo.gettitle()), TBlog::gettitle, bo.gettitle());
+        lqw.eq(StrUtil.isNotBlank(bo.getTitle()), TBlog::getTitle, bo.getTitle());
         lqw.eq(StrUtil.isNotBlank(bo.getCover()), TBlog::getCover, bo.getCover());
         lqw.eq(StrUtil.isNotBlank(bo.getSummary()), TBlog::getSummary, bo.getSummary());
         lqw.eq(StrUtil.isNotBlank(bo.getContent()), TBlog::getContent, bo.getContent());

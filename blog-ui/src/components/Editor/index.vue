@@ -1,19 +1,8 @@
 <template>
   <div>
-    <el-upload
-      :action="uploadUrl"
-      :before-upload="handleBeforeUpload"
-      :on-success="handleUploadSuccess"
-      :on-error="handleUploadError"
-      name="file"
-      :show-file-list="false"
-      :headers="headers"
-      style="display: none"
-      ref="upload"
-      v-if="this.type == 'url'"
-    >
+    <div class="editor" ref="editor" :style="styles" @click="clickEditor"></div>
+    <el-upload :class="classs" :action="uploadUrl" :headers="headers" name="file" :show-file-list="false" :on-success="uploadSuccess" :before-upload="beforeUpload">
     </el-upload>
-    <div class="editor" ref="editor" :style="styles"></div>
   </div>
 </template>
 
@@ -22,7 +11,21 @@ import Quill from "quill";
 import "quill/dist/quill.core.css";
 import "quill/dist/quill.snow.css";
 import "quill/dist/quill.bubble.css";
-import { getToken } from "@/utils/auth";
+import {getToken} from "@/utils/auth";
+
+const toolbarOptions = [
+  ["bold", "italic", "underline", "strike"],       // 加粗 斜体 下划线 删除线
+  ["blockquote", "code-block"],                    // 引用  代码块
+  [{ list: "ordered" }, { list: "bullet" }],       // 有序、无序列表
+  [{ indent: "-1" }, { indent: "+1" }],            // 缩进
+  [{ size: ["small", false, "large", "huge"] }],   // 字体大小
+  [{ header: [1, 2, 3, 4, 5, 6, false] }],         // 标题
+  [{ color: [] }, { background: [] }],             // 字体颜色、字体背景颜色
+  [{ align: [] }],                                 // 对齐方式
+  ['image'],
+  ["clean"]                                      // 清除文本格式
+]
+let classa = "";
 
 export default {
   name: "Editor",
@@ -31,6 +34,10 @@ export default {
     value: {
       type: String,
       default: "",
+    },
+    classs: {
+      type: String,
+      default: "123",
     },
     /* 高度 */
     height: {
@@ -46,44 +53,33 @@ export default {
     readOnly: {
       type: Boolean,
       default: false,
-    },
-    // 上传文件大小限制(MB)
-    fileSize: {
-      type: Number,
-      default: 5,
-    },
-    /* 类型（base64格式、url格式） */
-    type: {
-      type: String,
-      default: "url",
     }
   },
   data() {
     return {
-      uploadUrl: process.env.VUE_APP_BASE_API + "/common/upload", // 上传的图片服务器地址
-      headers: {
-        Authorization: "Bearer " + getToken()
-      },
       Quill: null,
       currentValue: "",
+      uploadUrl: process.env.VUE_APP_BASE_API + "/common/upload",
+      headers: { Authorization: "Bearer " + getToken() },
       options: {
         theme: "snow",
         bounds: document.body,
         debug: "warn",
         modules: {
           // 工具栏配置
-          toolbar: [
-            ["bold", "italic", "underline", "strike"],       // 加粗 斜体 下划线 删除线
-            ["blockquote", "code-block"],                    // 引用  代码块
-            [{ list: "ordered" }, { list: "bullet" }],       // 有序、无序列表
-            [{ indent: "-1" }, { indent: "+1" }],            // 缩进
-            [{ size: ["small", false, "large", "huge"] }],   // 字体大小
-            [{ header: [1, 2, 3, 4, 5, 6, false] }],         // 标题
-            [{ color: [] }, { background: [] }],             // 字体颜色、字体背景颜色
-            [{ align: [] }],                                 // 对齐方式
-            ["clean"],                                       // 清除文本格式
-            ["link", "image", "video"]                       // 链接、图片、视频
-          ],
+          toolbar:{
+            container:toolbarOptions,
+            handlers: {
+              image: function (value) {
+                if (value) {
+                  // 调用element的图片上传组件
+                  document.querySelector('.'+`${classa}`+' input').click()
+                } else {
+                  this.quill.format('image', false)
+                }
+              }
+            }
+          }
         },
         placeholder: "请输入内容",
         readOnly: this.readOnly,
@@ -116,6 +112,7 @@ export default {
     },
   },
   mounted() {
+    classa = this.classs;
     this.init();
   },
   beforeDestroy() {
@@ -123,20 +120,8 @@ export default {
   },
   methods: {
     init() {
-      const editor = this.$refs.editor;
+      let editor = this.$refs.editor;
       this.Quill = new Quill(editor, this.options);
-      // 如果设置了上传地址则自定义图片上传事件
-      if (this.type == 'url') {
-        let toolbar = this.Quill.getModule("toolbar");
-        toolbar.addHandler("image", (value) => {
-          this.uploadType = "image";
-          if (value) {
-            this.$refs.upload.$children[0].$refs.input.click();
-          } else {
-            this.quill.format("image", false);
-          }
-        });
-      }
       this.Quill.pasteHTML(this.currentValue);
       this.Quill.on("text-change", (delta, oldDelta, source) => {
         const html = this.$refs.editor.children[0].innerHTML;
@@ -156,35 +141,28 @@ export default {
         this.$emit("on-editor-change", eventName, ...args);
       });
     },
-    // 上传前校检格式和大小
-    handleBeforeUpload(file) {
-      // 校检文件大小
-      if (this.fileSize) {
-        const isLt = file.size / 1024 / 1024 < this.fileSize;
-        if (!isLt) {
-          this.$message.error(`上传文件大小不能超过 ${this.fileSize} MB!`);
-          return false;
-        }
-      }
-      return true;
-    },
-    handleUploadSuccess(res, file) {
-      // 获取富文本组件实例
+    uploadSuccess(res){
       let quill = this.Quill;
+      // 获取富文本组件实例
+      // let quill = this.$refs.editor
       // 如果上传成功
-      if (res.code == 200) {
+      if (res.code === 200) {
         // 获取光标所在位置
         let length = quill.getSelection().index;
-        // 插入图片  res.url为服务器返回的图片地址
-        quill.insertEmbed(length, "image", process.env.VUE_APP_BASE_API + res.fileName);
+        // 插入图片，res为服务器返回的图片链接地址
+        quill.insertEmbed(length, 'image', res.url)
         // 调整光标到最后
-        quill.setSelection(length + 1);
+        quill.setSelection(length + 1)
       } else {
-        this.$message.error("图片插入失败");
+        // 提示信息，需引入Message
+        this.$message.error('图片插入失败！')
       }
     },
-    handleUploadError() {
-      this.$message.error("图片插入失败");
+    clickEditor(){
+      let quill = this.Quill;
+      quill.setSelection(quill.getLength())
+    },
+    beforeUpload(file){
     },
   },
 };
@@ -192,7 +170,7 @@ export default {
 
 <style>
 .editor, .ql-toolbar {
-  white-space: pre-wrap !important;
+  white-space: pre-wrap!important;
   line-height: normal !important;
 }
 .quill-img {

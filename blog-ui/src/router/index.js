@@ -161,6 +161,20 @@ export const dynamicRoutes = [
         meta: { title: '修改生成配置', activeMenu: '/tool/gen' }
       }
     ]
+  },
+  {
+    path: '/blogs',
+    component: Layout,
+    hidden: true,
+    permissions: ['business:blog:edit'],
+    children: [
+      {
+        path: 'editBlog',
+        component: () => import('@/views/business/blog/blogEditor'),
+        name: 'BlogEdit',
+        meta: { title: '编辑博文', activeMenu: '/blog/editBlog' }
+      }
+    ]
   }
 ]
 
