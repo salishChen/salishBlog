@@ -40,7 +40,7 @@ public class TBlogEditBo {
 
     /** 标签id */
     @ApiModelProperty("标签id")
-    private Long tagId;
+    private String tagId;
 
     /** 类型 */
     @ApiModelProperty("类型")

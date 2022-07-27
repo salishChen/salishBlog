@@ -30,9 +30,9 @@
         </el-col>
         <el-col :span="7">
           <el-form-item label="标签" prop="tags">
-            <el-select v-model="form.tags" placeholder="请选择标签" clearable :style="{width: '100%'}">
-              <el-option v-for="(item, index) in tagsOptions" :key="index" :label="item.label"
-                         :value="item.value" :disabled="item.disabled"></el-option>
+            <el-select v-model="tags" placeholder="请选择标签" clearable multiple :style="{width: '100%'}">
+              <el-option v-for="(item, index) in tagsOptions" :key="index" :label="item.tag"
+                         :value="Number(item.id)" :disabled="item.disabled"></el-option>
             </el-select>
           </el-form-item>
         </el-col>
@@ -92,7 +92,8 @@ export default {
         title: '',
         summary: undefined,
         cover: null,
-        tags: undefined,
+        tags: [],
+        tagId: undefined,
         blogType: undefined,
         contentType: 2,
         content: undefined,
@@ -104,6 +105,7 @@ export default {
         content: [{required: true, message: '请输入博文内容', trigger: ['blur','change']}],
       },
       tagsOptions: [],
+      tags: [],
       blogTypeOptions: [],
       contentTypeOptions: [],
     }
@@ -124,6 +126,11 @@ export default {
     if (this.blogId !=undefined&&this.blogId!=""){
       getBlog(this.blogId).then(response => {
         this.form = response.data;
+        this.tags=[];
+        this.form.tagId.split(",").forEach(item=>{
+          this.tags.push(Number(item));
+        })
+        console.log(this.tags)
       });
     }
   },
@@ -134,6 +141,7 @@ export default {
       this.$refs['elForm'].validate(valid => {
         if (!valid) return
         // TODO 提交表单
+        this.form.tagId = this.tags.toString();
         if (this.blogId != undefined && this.blogId != "") {
           this.form.id = this.blogId;
             updateBlog(this.form).then(response => {

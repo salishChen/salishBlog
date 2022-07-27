@@ -46,7 +46,7 @@ public class TBlogQueryBo extends BaseEntity {
 	private String content;
 	/** 标签id */
 	@ApiModelProperty("标签id")
-	private Long tagId;
+	private String tagId;
 	/** 类型 */
 	@ApiModelProperty("类型")
 	private String blogType;

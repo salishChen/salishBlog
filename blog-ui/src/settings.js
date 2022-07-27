@@ -34,6 +34,8 @@ module.exports = {
    */
   dynamicTitle: false,
 
+  /** 默认页面，1前台 2 后台*/
+  defaultPage : 1,
   /**
    * @type {string | array} 'production' | ['production', 'development']
    * @description Need show err logs component.

@@ -75,6 +75,19 @@ export const constantRoutes = [
     ]
   },
   {
+    path: '/salish/',
+    component: Layout,
+    redirect: 'index',
+    children: [
+      {
+        path: 'blog',
+        component: () => import('@/views/blogui/blog/index'),
+        name: 'blog',
+        meta: { title: '博客', icon: 'dashboard', affix: true }
+      }
+    ]
+  },
+  {
     path: '/user',
     component: Layout,
     hidden: true,

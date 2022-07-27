@@ -39,6 +39,8 @@ import VueMeta from 'vue-meta'
 // 字典数据组件
 import DictData from '@/components/DictData'
 
+import BlogTag from "@/components/Tag"
+
 //markDown
 import VMdEditor from '@kangc/v-md-editor/lib/codemirror-editor';
 import '@kangc/v-md-editor/lib/style/codemirror-editor.css';
@@ -70,6 +72,15 @@ import 'codemirror/addon/scroll/simplescrollbars.css';
 // style
 import 'codemirror/lib/codemirror.css';
 
+import defaultSettings from '@/settings'
+
+if (localStorage.getItem('layout-setting')===null) {
+  localStorage.setItem('layout-setting',JSON.stringify(defaultSettings));
+}
+if (sessionStorage.getItem('layout-setting')===null) {
+  sessionStorage.setItem('layout-setting',JSON.stringify(defaultSettings))
+}
+
 // 全局方法挂载
 Vue.prototype.getDicts = getDicts
 Vue.prototype.getConfigKey = getConfigKey
@@ -80,6 +91,7 @@ Vue.prototype.selectDictLabel = selectDictLabel
 Vue.prototype.selectDictLabels = selectDictLabels
 Vue.prototype.download = download
 Vue.prototype.handleTree = handleTree
+
 
 Vue.prototype.IdSuccess = function (msg) {
   this.$message({ showClose: true, message: msg, type: "success" });
@@ -100,6 +112,7 @@ VMdEditor.Codemirror = Codemirror;
 VMdEditor.use(githubTheme, {
   Hljs: hljs,
 });
+
 // 全局组件挂载
 Vue.component('DictTag', DictTag)
 Vue.component('Pagination', Pagination)
@@ -108,6 +121,7 @@ Vue.component('Editor', Editor)
 Vue.component('FileUpload', FileUpload)
 Vue.component('ImageUpload', ImageUpload)
 Vue.component('ImagePreview', ImagePreview)
+Vue.component('BlogTag', BlogTag)
 
 Vue.use(directive)
 Vue.use(plugins)

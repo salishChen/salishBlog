@@ -29,6 +29,12 @@ public interface ITBlogService extends IService<TBlog> {
 	List<TBlogVo> queryList(TBlogQueryBo bo);
 
 	/**
+	 * 仅查询博客信息
+	 */
+	List<TBlog> queryInfo(TBlog tBlog) ;
+
+	List <TBlog> selectBlogByTag(TBlog tBlog);
+	/**
 	 * 根据新增业务对象插入博客
 	 * @param bo 博客新增业务对象
 	 * @return

@@ -1,25 +1,42 @@
 <template>
   <div :class="classObj" class="app-wrapper" :style="{'--current-color': theme}">
-    <div v-if="device==='mobile'&&sidebar.opened" class="drawer-bg" @click="handleClickOutside"/>
-    <sidebar v-if="!sidebar.hide" class="sidebar-container" />
-    <div :class="{hasTagsView:needTagsView,sidebarHide:sidebar.hide}" class="main-container">
-      <div :class="{'fixed-header':fixedHeader}">
-        <navbar />
-        <tags-view v-if="needTagsView" />
+    <template v-if="defaultPage==1">
+      <div :class="{hasTagsView:needTagsView,sidebarHide:sidebar.hide}" class="" style="background-color: #f1f1f1">
+        <div :class="{'fixed-header':fixedHeader}">
+          <blog-navbar />
+
+        </div>
+        <div style="width: 70%;margin: 0 15%">
+          <app-main />
+        </div>
+        <right-panel>
+          <settings />
+        </right-panel>
       </div>
-      <app-main />
-      <right-panel>
-        <settings />
-      </right-panel>
-    </div>
+    </template>
+    <template v-if="defaultPage==2">
+      <div v-if="device==='mobile'&&sidebar.opened" class="drawer-bg" @click="handleClickOutside"/>
+      <sidebar v-if="!sidebar.hide" class="sidebar-container" />
+      <div :class="{hasTagsView:needTagsView,sidebarHide:sidebar.hide}" class="main-container">
+        <div :class="{'fixed-header':fixedHeader}">
+          <navbar />
+          <tags-view v-if="needTagsView" />
+        </div>
+        <app-main />
+        <right-panel>
+          <settings />
+        </right-panel>
+      </div>
+    </template>
+
   </div>
 </template>
 
 <script>
 import RightPanel from '@/components/RightPanel'
-import { AppMain, Navbar, Settings, Sidebar, TagsView } from './components'
+import { AppMain, Navbar, BlogNavbar, Settings, Sidebar, TagsView } from './components'
 import ResizeMixin from './mixin/ResizeHandler'
-import { mapState } from 'vuex'
+import { mapGetters,mapState } from 'vuex'
 import variables from '@/assets/styles/variables.scss'
 
 export default {
@@ -27,20 +44,24 @@ export default {
   components: {
     AppMain,
     Navbar,
+    BlogNavbar,
     RightPanel,
     Settings,
     Sidebar,
     TagsView
   },
   mixins: [ResizeMixin],
+
   computed: {
+
     ...mapState({
       theme: state => state.settings.theme,
       sideTheme: state => state.settings.sideTheme,
       sidebar: state => state.app.sidebar,
       device: state => state.app.device,
       needTagsView: state => state.settings.tagsView,
-      fixedHeader: state => state.settings.fixedHeader
+      fixedHeader: state => state.settings.fixedHeader,
+      defaultPage: state => state.settings.defaultPage,
     }),
     classObj() {
       return {
@@ -53,6 +74,9 @@ export default {
     variables() {
       return variables;
     }
+  },
+  created() {
+
   },
   methods: {
     handleClickOutside() {

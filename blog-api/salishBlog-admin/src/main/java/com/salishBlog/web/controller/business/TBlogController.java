@@ -3,6 +3,7 @@ package com.salishBlog.web.controller.business;
 import java.util.List;
 import java.util.Arrays;
 
+import com.salishBlog.business.domain.TBlog;
 import com.salishBlog.common.core.domain.entity.SysUser;
 import com.salishBlog.common.core.domain.model.LoginUser;
 import com.salishBlog.common.utils.DateUtils;
@@ -54,9 +55,21 @@ public class TBlogController extends BaseController {
     @ApiOperation("查询博客列表")
     @PreAuthorize("@ss.hasPermi('tBlog:blog:list')")
     @GetMapping("/list")
-    public TableDataInfo<TBlogVo> list(TBlogQueryBo bo) {
+    public TableDataInfo<TBlog> list(TBlog bo) {
         startPage();
-        List<TBlogVo> list = iTBlogService.queryList(bo);
+        List<TBlog> list = iTBlogService.selectBlogByTag(bo);
+        return getDataTable(list);
+    }
+
+    /**
+     * 查询博客列表
+     */
+    @ApiOperation("查询博客列表")
+    @PreAuthorize("@ss.hasPermi('tBlog:blog:list')")
+    @GetMapping("/listInfo")
+    public TableDataInfo<TBlog> listInfo(TBlog bo) {
+        startPage();
+        List<TBlog> list = iTBlogService.selectBlogByTag(bo);
         return getDataTable(list);
     }
 

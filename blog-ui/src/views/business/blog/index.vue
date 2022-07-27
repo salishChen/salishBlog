@@ -11,13 +11,10 @@
         />
       </el-form-item>
       <el-form-item label="标签" prop="tagId">
-        <el-input
-          v-model="queryParams.tagId"
-          placeholder="请输入标签id"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
+        <el-select v-model="queryParams.tagId" placeholder="请选择标签" clearable :style="{width: '100%'}">
+          <el-option v-for="(item, index) in tagsOptions" :key="index" :label="item.tag"
+                     :value="item.id" :disabled="item.disabled"></el-option>
+        </el-select>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -75,7 +72,13 @@
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="标题" align="center" prop="title" />
       <el-table-column label="简介" align="center" prop="summary" />
-      <el-table-column label="标签" align="center" prop="tagId" />
+      <el-table-column label="标签" align="center" prop="tagId">
+        <template slot-scope="scope">
+          <template v-for="item in scope.row.tagId.split(',')">
+            <el-tag :color="tags[item].tagColor">{{tags[item].tag}}</el-tag>
+          </template>
+        </template>
+      </el-table-column>
       <el-table-column label="类型" align="center" prop="blogType" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
@@ -110,6 +113,7 @@
 <script>
 import { listBlog, getBlog, delBlog, addBlog, updateBlog, exportBlog } from "@/api/business/blog";
 import Editor from '@/components/Editor';
+import {listTag} from "@/api/business/tag";
 
 export default {
   name: "Blog",
@@ -132,6 +136,8 @@ export default {
       total: 0,
       // 博客表格数据
       blogList: [],
+      tagsOptions: [],
+      tags:{},
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -142,6 +148,15 @@ export default {
     };
   },
   created() {
+    this.getDicts("blog_type").then(response => {
+      this.blogTypeOptions = response.data;
+    });
+    listTag().then(response => {
+      this.tagsOptions = response.rows;
+      this.tagsOptions.forEach(item=>{
+        this.tags[item.id]=item;
+      })
+    });
     this.getList();
   },
   methods: {

@@ -1,48 +1,35 @@
 <template>
   <div class="navbar">
-    <hamburger id="hamburger-container" :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
-
-    <breadcrumb id="breadcrumb-container" class="breadcrumb-container" v-if="!topNav"/>
-    <top-nav id="topmenu-container" class="topmenu-container" v-if="topNav"/>
-
+    <div class="left-menu">
+      <el-menu
+        :default-active="activeIndex"
+        class="el-menu-demo"
+        mode="horizontal"
+        @select="handleSelect"
+        background-color="#fff"
+        text-color="#3c3f41"
+        active-text-color="#2b2b2b">
+        <el-menu-item index="1">博客</el-menu-item>
+        <el-menu-item index="2">分类</el-menu-item>
+        <el-menu-item index="3">归档</el-menu-item>
+        <el-menu-item index="9">关于我</el-menu-item>
+      </el-menu>
+    </div>
     <div class="right-menu">
       <template v-if="device!=='mobile'">
-        <search id="header-search" class="right-menu-item" />
-        <el-tooltip content="博客页" class="right-menu-item hover-effect" @click.native="toExhibit">
+        <screenfull id="screenfull" class="right-menu-item hover-effect"/>
+        <el-tooltip content="工作台" class="right-menu-item hover-effect" @click.native="toWorkspace">
           <div style="padding-top: 2px;">
             <svg-icon icon-class="druid" style="font-size: 25px"></svg-icon>
           </div>
         </el-tooltip>
-        <screenfull id="screenfull" class="right-menu-item hover-effect" />
-        <el-tooltip content="布局大小" effect="dark" placement="bottom">
-          <size-select id="size-select" class="right-menu-item hover-effect" />
-        </el-tooltip>
-
       </template>
-
-      <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
-        <div class="avatar-wrapper">
-          <img :src="avatar" class="user-avatar">
-          <i class="el-icon-caret-bottom" />
-        </div>
-        <el-dropdown-menu slot="dropdown">
-          <router-link to="/user/profile">
-            <el-dropdown-item>个人中心</el-dropdown-item>
-          </router-link>
-          <el-dropdown-item @click.native="setting = true">
-            <span>布局设置</span>
-          </el-dropdown-item>
-          <el-dropdown-item divided @click.native="logout">
-            <span>退出登录</span>
-          </el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown>
     </div>
   </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import {mapGetters} from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import TopNav from '@/components/TopNav'
 import Hamburger from '@/components/Hamburger'
@@ -86,29 +73,26 @@ export default {
       }
     }
   },
+  data(){
+    return{
+      activeIndex:'1'
+    }
+  },
   methods: {
+    handleSelect(){
+
+    },
     toggleSideBar() {
       this.$store.dispatch('app/toggleSideBar')
     },
-    async logout() {
-      this.$confirm('确定注销并退出系统吗？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        this.$store.dispatch('LogOut').then(() => {
-          location.href = '/index';
-        })
-      }).catch(() => {});
-    },
-    async toExhibit() {
-      location.href = '/'
+    async toWorkspace() {
+      location.href = '/login'
       let settings = JSON.parse(sessionStorage.getItem('layout-setting'));
-      settings.defaultPage=1;
+      settings.defaultPage=2;
       sessionStorage.setItem('layout-setting', JSON.stringify(settings));
       await this.$store.dispatch('settings/changeSetting', {
         key: 'defaultPage',
-        value: 1
+        value: 2
       })
     }
   }
@@ -121,7 +105,7 @@ export default {
   overflow: hidden;
   position: relative;
   background: #fff;
-  box-shadow: 0 1px 4px rgba(0,21,41,.08);
+  box-shadow: 0 1px 4px rgba(0, 21, 41, .08);
 
   .hamburger-container {
     line-height: 46px;
@@ -129,7 +113,7 @@ export default {
     float: left;
     cursor: pointer;
     transition: background .3s;
-    -webkit-tap-highlight-color:transparent;
+    -webkit-tap-highlight-color: transparent;
 
     &:hover {
       background: rgba(0, 0, 0, .025)
@@ -148,6 +132,14 @@ export default {
   .errLog-container {
     display: inline-block;
     vertical-align: top;
+  }
+
+  .left-menu{
+    padding-left: 50px;
+    float: left;
+    height: 100%;
+    line-height: 50px;
+    width: 80%;
   }
 
   .right-menu {

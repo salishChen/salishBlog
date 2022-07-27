@@ -43,7 +43,7 @@ public class TBlogVo {
 	/** 标签id */
 	@Excel(name = "标签id")
 	@ApiModelProperty("标签id")
-	private Long tagId;
+	private String tagId;
 	/** 类型 */
 	@Excel(name = "类型")
 	@ApiModelProperty("类型")

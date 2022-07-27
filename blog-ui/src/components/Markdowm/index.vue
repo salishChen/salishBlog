@@ -3,6 +3,7 @@
 </template>
 
 <script>
+
 export default {
   name: "Markdown",
   props:{
@@ -34,7 +35,6 @@ export default {
         return this.content
       },
       set(val) {
-        console.log(val)
         this.$emit('update:content', val)
       }
     },

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -17,7 +18,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Accessors(chain = true)
 @TableName("t_blog")
-public class TBlog implements Serializable {
+public class TBlogInfo implements Serializable {
 
 private static final long serialVersionUID=1L;
 
@@ -31,8 +32,6 @@ private static final long serialVersionUID=1L;
     private String cover;
     /** 简介 */
     private String summary;
-    /** 内容 */
-    private String content;
     /** 标签id */
     private String tagId;
     @TableField(exist = false)

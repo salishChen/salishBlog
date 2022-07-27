@@ -2,6 +2,9 @@ package com.salishBlog.business.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
+import com.github.yulichang.query.interfaces.MPJJoin;
+import com.github.yulichang.wrapper.MPJJoinLambdaQueryWrapper;
+import com.salishBlog.business.domain.TBlogInfo;
 import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -41,12 +44,20 @@ public class TBlogServiceImpl extends ServiceImpl<TBlogMapper, TBlog> implements
         lqw.eq(StrUtil.isNotBlank(bo.getTitle()), TBlog::getTitle, bo.getTitle());
         lqw.eq(StrUtil.isNotBlank(bo.getCover()), TBlog::getCover, bo.getCover());
         lqw.eq(StrUtil.isNotBlank(bo.getSummary()), TBlog::getSummary, bo.getSummary());
-        lqw.eq(StrUtil.isNotBlank(bo.getContent()), TBlog::getContent, bo.getContent());
         lqw.eq(bo.getTagId() != null, TBlog::getTagId, bo.getTagId());
         lqw.eq(StrUtil.isNotBlank(bo.getBlogType()), TBlog::getBlogType, bo.getBlogType());
         lqw.eq(StrUtil.isNotBlank(bo.getContentType()), TBlog::getContentType, bo.getContentType());
         lqw.eq(bo.getIsDelete() != null, TBlog::getIsDelete, bo.getIsDelete());
         return entity2Vo(this.list(lqw));
+    }
+    @Override
+    public List<TBlog> queryInfo(TBlog tBlog) {
+        return this.baseMapper.selectBlogByTag(tBlog);
+    }
+
+    @Override
+    public List <TBlog> selectBlogByTag(TBlog tBlog){
+        return this.baseMapper.selectBlogByTag(tBlog);
     }
 
     /**
