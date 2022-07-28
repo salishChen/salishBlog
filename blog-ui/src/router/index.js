@@ -64,10 +64,22 @@ export const constantRoutes = [
   {
     path: '',
     component: Layout,
+    redirect: 'salish/blog',
+    children: [
+      {
+        path: '/salish/blog',
+        component: () => import('@/views/blogui/blog/index'),
+        name: 'Index',
+      }
+    ]
+  },
+  {
+    path: '/index',
+    component: Layout,
     redirect: 'index',
     children: [
       {
-        path: 'index',
+        path: '',
         component: () => import('@/views/index'),
         name: 'Index',
         meta: { title: '首页', icon: 'dashboard', affix: true }
@@ -83,7 +95,18 @@ export const constantRoutes = [
         path: 'blog',
         component: () => import('@/views/blogui/blog/index'),
         name: 'blog',
-        meta: { title: '博客', icon: 'dashboard', affix: true }
+      }
+    ]
+  },
+  {
+    path: '/salish/',
+    component: Layout,
+    redirect: 'index',
+    children: [
+      {
+        path: 'blogContent',
+        component: () => import('@/views/blogui/blog/blog'),
+        name: 'blogContent',
       }
     ]
   },

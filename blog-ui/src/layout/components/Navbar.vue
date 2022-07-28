@@ -102,7 +102,7 @@ export default {
       }).catch(() => {});
     },
     async toExhibit() {
-      location.href = '/'
+      location.href = '/salish/blog'
       let settings = JSON.parse(sessionStorage.getItem('layout-setting'));
       settings.defaultPage=1;
       sessionStorage.setItem('layout-setting', JSON.stringify(settings));

@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <div class="blog-container"  v-for="item in blogList">
+    <div class="blog-container"  v-for="item in blogList" @click="openBlog(item.id)">
       <div class="blog-title">{{item.title}}</div>
       <el-container>
         <el-aside style="background-color: transparent;width: 180px">
@@ -17,6 +17,7 @@
       </el-container>
     </div>
     <pagination
+      style="right: 20px"
       v-show="total>0"
       :total="total"
       :page.sync="queryParams.pageNum"
@@ -27,9 +28,8 @@
 </template>
 
 <script>
-import { listBlog, getBlog, delBlog, addBlog, updateBlog, exportBlog } from "@/api/business/blog";
+import { listBlog, listBlogInfo,listTag, getDictData} from "@/api/business/salish";
 import Editor from '@/components/Editor';
-import {listTag} from "@/api/business/tag";
 
 export default {
   name: "Blog",
@@ -53,7 +53,7 @@ export default {
     };
   },
   created() {
-    this.getDicts("blog_type").then(response => {
+    getDictData("blog_type").then(response => {
       this.blogTypeOptions = response.data;
     });
     listTag().then(response => {
@@ -69,11 +69,14 @@ export default {
     /** 查询博客列表 */
     getList() {
       this.loading = true;
-      listBlog(this.queryParams).then(response => {
+      listBlogInfo(this.queryParams).then(response => {
         this.blogList = response.rows;
         this.total = response.total;
         this.loading = false;
       });
+    },
+    openBlog(id){
+      this.$router.push({path:"/salish/blogContent",query:{blogId:id}})
     }
   }
 };

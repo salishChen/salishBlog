@@ -57,4 +57,5 @@ public class TBlogVo {
 	@ApiModelProperty("是否删除")
 	private Long isDelete;
 
+	private String[] tagIds;
 }
