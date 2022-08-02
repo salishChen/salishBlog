@@ -28,6 +28,5 @@ public class TTagAddBo {
     private String tagColor;
     /** 访问次数 */
     @ApiModelProperty("访问次数")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date times;
+    private Integer times;
 }

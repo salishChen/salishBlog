@@ -11,5 +11,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="times" column="times"/>
     </resultMap>
 
+    <update id="increaseTimes" parameterType="long">
+        update t_tag set times =  times+1 where id = #{id}
+    </update>
+
+    <update id="decreaseTimes" parameterType="long">
+        update t_tag set times =  times-1 where id = #{id}
+    </update>
 
 </mapper>

@@ -25,7 +25,6 @@ import Pagination from "@/components/Pagination";
 import RightToolbar from "@/components/RightToolbar"
 // 富文本组件
 import Editor from "@/components/Editor"
-import Markdown from "@/components/Markdowm"
 // 文件上传组件
 import FileUpload from "@/components/FileUpload"
 // 图片上传组件
@@ -40,6 +39,8 @@ import VueMeta from 'vue-meta'
 import DictData from '@/components/DictData'
 
 import BlogTag from "@/components/Tag"
+
+import formatDate from "@/utils/formatDate";
 
 //markDown
 import VMdEditor from '@kangc/v-md-editor/lib/codemirror-editor';
@@ -126,6 +127,7 @@ Vue.component('BlogTag', BlogTag)
 Vue.use(directive)
 Vue.use(plugins)
 Vue.use(VueMeta)
+Vue.use(formatDate)
 Vue.use(VMdEditor);
 DictData.install()
 

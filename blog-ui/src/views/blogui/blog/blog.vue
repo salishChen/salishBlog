@@ -4,8 +4,8 @@
       <div class="blog-content-title">{{ blogContent.title }}</div>
       <div class="blog-content-summary">简介：{{ blogContent.summary }}</div>
       <div class="blog-content-tag">标签：
-        <div v-for="tagid in blogContent.tagIds">
-          <BlogTag :tag-color="tags[tagid].tagColor" :tag-name="tags[tagid].tag"/>
+        <div v-if="blogContent.tagId!='' && blogContent.tagId!=undefined" v-for="tagId in blogContent.tagIds">
+          <BlogTag :tag-color="tags[tagId].tagColor" :tag-name="tags[tagId].tag" :tag-id="tagId"/>
         </div>
       </div>
       <div class="blog-content-title2">正文</div>
@@ -42,7 +42,6 @@ export default {
       },
     };
   },
-
   created() {
     const blogId = this.$route.query.blogId;
     console.log(blogId)
@@ -50,22 +49,22 @@ export default {
       this.blogTypeOptions = response.data;
     });
     listTag().then(response => {
-      let tagsOptions = []
+      let tagsOptions=[]
       tagsOptions = response.rows;
-      tagsOptions.forEach(item => {
-        this.tags[item.id] = item;
+      tagsOptions.forEach(item=>{
+        this.tags[item.id]=item;
+      })
+      getBlog(blogId).then(res => {
+        this.blogContent = res.data;
       })
     });
-    getBlog(blogId).then(res => {
-      this.blogContent = res.data;
-      console.log(res)
-    })
   },
   methods: {}
 };
 </script>
 <style>
 .blog-content-container {
+  border-radius: 2px;
   background-color: #FFFFFF;
   margin: 10px;
   padding: 10px;

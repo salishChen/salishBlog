@@ -34,6 +34,6 @@ private static final long serialVersionUID=1L;
     private String tagColor;
 
     /** 访问次数 */
-    private Date times;
+    private Integer times;
 
 }

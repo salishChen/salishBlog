@@ -1,5 +1,5 @@
 <template>
-  <div class="blog-tag" :style="{backgroundColor:tagColor}">{{tagName}}</div>
+  <div class="blog-tag" :style="{backgroundColor:tagColor}" @click.stop="searchTag">{{tagName}}</div>
 </template>
 
 <script>
@@ -15,15 +15,27 @@ export default {
     tagColor: {
       type: String,
       default: ''
+    },
+    tagId:{
+      type: String,
+      default: ''
     }
   },
   computed: {
+  },
+  methods:{
+    searchTag(){
+      if (this.tagId!==''&&this.tagId!==undefined){
+          this.$router.replace({path: "/salish/category", query: {tagId: this.tagId}})
+      }
+    }
   }
 }
 </script>
 
 <style>
 .blog-tag{
+  display: inline-block;
   margin-left: 5px;
   width: 36px;
   height: 25px;

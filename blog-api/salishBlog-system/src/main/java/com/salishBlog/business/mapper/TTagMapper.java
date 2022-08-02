@@ -10,5 +10,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @date 2022-07-21
  */
 public interface TTagMapper extends BaseMapper<TTag> {
-
+    boolean increaseTimes(Long id);
+    boolean decreaseTimes(Long id);
 }

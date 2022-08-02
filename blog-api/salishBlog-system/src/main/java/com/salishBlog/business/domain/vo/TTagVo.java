@@ -33,9 +33,8 @@ public class TTagVo {
 	@ApiModelProperty("标签色彩")
 	private String tagColor;
 	/** 访问次数 */
-	@Excel(name = "访问次数" , width = 30, dateFormat = "yyyy-MM-dd")
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@Excel(name = "访问次数" )
 	@ApiModelProperty("访问次数")
-	private Date times;
+	private Integer times;
 
 }

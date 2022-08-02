@@ -5,6 +5,8 @@ import cn.hutool.core.util.StrUtil;
 import com.github.yulichang.query.interfaces.MPJJoin;
 import com.github.yulichang.wrapper.MPJJoinLambdaQueryWrapper;
 import com.salishBlog.business.domain.TBlogInfo;
+import com.salishBlog.business.service.ITTagService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -31,6 +33,9 @@ import java.util.stream.Collectors;
  */
 @Service
 public class TBlogServiceImpl extends ServiceImpl<TBlogMapper, TBlog> implements ITBlogService {
+
+    @Autowired
+    ITTagService tagService;
 
     @Override
     public TBlogVo queryById(Long id){
@@ -82,6 +87,12 @@ public class TBlogServiceImpl extends ServiceImpl<TBlogMapper, TBlog> implements
 
     @Override
     public Boolean insertByAddBo(TBlogAddBo bo) {
+        if (bo.getTagId()!=null&& !bo.getTagId().equals("")){
+            String[] tagIds = bo.getTagId().split("'");
+            for (String id:tagIds) {
+                tagService.increaseTimes(Long.parseLong(id));
+            }
+        }
         TBlog add = BeanUtil.toBean(bo, TBlog.class);
         validEntityBeforeSave(add);
         return this.save(add);
@@ -89,6 +100,19 @@ public class TBlogServiceImpl extends ServiceImpl<TBlogMapper, TBlog> implements
 
     @Override
     public Boolean updateByEditBo(TBlogEditBo bo) {
+        TBlogVo tBlogVo = queryById(bo.getId());
+        if (tBlogVo.getTagId()!=null&& !tBlogVo.getTagId().equals("")){
+            String[] tagIds = tBlogVo.getTagId().split("'");
+            for (String id:tagIds) {
+                tagService.decreaseTimes(Long.parseLong(id));
+            }
+        }
+        if (bo.getTagId()!=null&& !bo.getTagId().equals("")){
+            String[] tagIds = bo.getTagId().split("'");
+            for (String id:tagIds) {
+                tagService.increaseTimes(Long.parseLong(id));
+            }
+        }
         TBlog update = BeanUtil.toBean(bo, TBlog.class);
         validEntityBeforeSave(update);
         return this.updateById(update);
@@ -108,6 +132,15 @@ public class TBlogServiceImpl extends ServiceImpl<TBlogMapper, TBlog> implements
         if(isValid){
             //TODO 做一些业务上的校验,判断是否需要校验
         }
+        ids.forEach(blogId->{
+            TBlogVo tBlogVo = queryById(blogId);
+            if (tBlogVo.getTagId()!=null&& !tBlogVo.getTagId().equals("")){
+                String[] tagIds = tBlogVo.getTagId().split("'");
+                for (String id:tagIds) {
+                    tagService.decreaseTimes(Long.parseLong(id));
+                }
+            }
+        });
         return this.removeByIds(ids);
     }
 }

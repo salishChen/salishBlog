@@ -77,6 +77,15 @@ public class TTagServiceImpl extends ServiceImpl<TTagMapper, TTag> implements IT
         validEntityBeforeSave(update);
         return this.updateById(update);
     }
+    @Override
+    public Boolean increaseTimes(Long id){
+        return this.baseMapper.increaseTimes(id);
+    }
+
+    @Override
+    public Boolean decreaseTimes(Long id) {
+        return this.baseMapper.decreaseTimes(id);
+    }
 
     /**
      * 保存前的数据校验

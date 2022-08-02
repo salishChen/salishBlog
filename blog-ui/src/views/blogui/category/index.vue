@@ -11,10 +11,19 @@
             {{ item.summary }}
           </div>
           <template v-if="item.tagId!='' && item.tagId!=undefined">
-            <div v-for="tagId in item.tagIds">
-              <BlogTag :tag-color="tags[tagId].tagColor" :tag-name="tags[tagId].tag" :tag-id="tagId"/>
+            <div class="left-block">
+              <div v-for="tagId in item.tagIds">
+                <BlogTag :tag-color="tags[tagId].tagColor" :tag-name="tags[tagId].tag" :tag-id="tagId"/>
+              </div>
             </div>
+            <div class="right-block">
+              <div class="blog-summary">
+                <i class="el-icon-date"/>   {{item.createTime}}
+              </div>
+            </div>
+
           </template>
+
         </el-main>
       </el-container>
     </div>
@@ -34,7 +43,7 @@ import {listBlog, listBlogInfo, listTag, getDictData} from "@/api/business/salis
 import Editor from '@/components/Editor';
 
 export default {
-  name: "Blog",
+  name: "category",
   components: {
     Editor,
   },
@@ -64,8 +73,13 @@ export default {
       tagsOptions.forEach(item => {
         this.tags[item.id] = item;
       })
-      this.getList();
     });
+  },
+  mounted() {
+    this.tagId = this.$route.query.tagId;
+    this.queryParams.tagId = this.tagId;
+    this.getList();
+
   },
   methods: {
     /** 查询博客列表 */
@@ -83,9 +97,8 @@ export default {
   }
 };
 </script>
-<style>
+<style scoped>
 .blog-container {
-  border-radius: 2px;
   background-color: #FFFFFF;
   margin: 10px;
   padding: 10px;
@@ -114,5 +127,15 @@ export default {
 
 .pagination-container {
   background-color: transparent !important;
+}
+.left-block{
+  display: inline-block;
+  position: relative;
+  float: left;
+}
+.right-block{
+  display: inline-block;
+  position: relative;
+  float: right;
 }
 </style>

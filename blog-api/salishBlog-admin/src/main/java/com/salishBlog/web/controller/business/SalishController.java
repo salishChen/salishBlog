@@ -56,7 +56,6 @@ public class SalishController extends BaseController {
     /**
      * 查询博客列表
      */
-    @ApiOperation("查询博客列表")
     @GetMapping("/blog/list")
     public TableDataInfo<TBlog> list(TBlog bo) {
         startPage();
@@ -67,7 +66,6 @@ public class SalishController extends BaseController {
     /**
      * 查询博客列表
      */
-    @ApiOperation("查询博客列表")
     @GetMapping("/blog/listInfo")
     public TableDataInfo<TBlog> listInfo(TBlog bo) {
         startPage();
@@ -78,7 +76,6 @@ public class SalishController extends BaseController {
     /**
      * 获取博客详细信息
      */
-    @ApiOperation("获取博客详细信息")
     @GetMapping("/blog/{id}")
     public AjaxResult<TBlogVo> getInfo(@PathVariable("id" ) Long id) {
         return AjaxResult.success(iTBlogService.queryById(id));
@@ -87,7 +84,6 @@ public class SalishController extends BaseController {
     /**
      * 查询标签列表
      */
-    @ApiOperation("查询标签列表")
     @GetMapping("/tag/list")
     public TableDataInfo<TTagVo> list(TTagQueryBo bo) {
         startPage();

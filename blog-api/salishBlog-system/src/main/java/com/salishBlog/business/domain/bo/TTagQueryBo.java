@@ -41,8 +41,7 @@ public class TTagQueryBo extends BaseEntity {
 	@ApiModelProperty("标签色彩")
 	private String tagColor;
 	/** 访问次数 */
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	@ApiModelProperty("访问次数")
-	private Date times;
+	private Integer times;
 
 }

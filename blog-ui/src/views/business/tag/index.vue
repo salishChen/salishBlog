@@ -70,11 +70,8 @@
           <div :style="{backgroundColor:scope.row.tagColor,width:'25px',height:'25px',display:'inline-block'}"></div>
         </template>
       </el-table-column>
-      <el-table-column label="访问次数" align="center" prop="times" width="180">
-        <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.times, '{y}-{m}-{d}') }}</span>
-        </template>
-      </el-table-column>
+      <el-table-column label="使用次数" align="center" prop="times" width="180"/>
+<!--          <span>{{ parseTime(scope.row.times, '{y}-{m}-{d}') }}</span>-->
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button

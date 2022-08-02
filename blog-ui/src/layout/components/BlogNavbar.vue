@@ -1,6 +1,6 @@
 <template>
   <div class="navbar">
-    <div class="left-menu">
+    <div :class="device==='mobile'?'left-menu-mobile':'left-menu'">
       <el-menu
         :default-active="activeIndex"
         class="el-menu-demo"
@@ -8,15 +8,16 @@
         @select="handleSelect"
         background-color="#fff"
         text-color="#3c3f41"
+        :router="true"
         active-text-color="#2b2b2b">
-        <el-menu-item index="1">博客</el-menu-item>
-        <el-menu-item index="2">分类</el-menu-item>
+        <el-menu-item index="/salish/blog" >博客</el-menu-item>
+        <el-menu-item index="/salish/category">分类</el-menu-item>
         <el-menu-item index="3">归档</el-menu-item>
         <el-menu-item index="9">关于我</el-menu-item>
       </el-menu>
     </div>
     <div class="right-menu">
-      <template v-if="device!=='mobile'">
+      <template>
         <screenfull id="screenfull" class="right-menu-item hover-effect"/>
         <el-tooltip content="工作台" class="right-menu-item hover-effect" @click.native="toWorkspace">
           <div style="padding-top: 2px;">
@@ -86,7 +87,7 @@ export default {
       this.$store.dispatch('app/toggleSideBar')
     },
     async toWorkspace() {
-      location.href = '/login'
+      await this.$router.replace({path: "/index"})
       let settings = JSON.parse(sessionStorage.getItem('layout-setting'));
       settings.defaultPage=2;
       sessionStorage.setItem('layout-setting', JSON.stringify(settings));
@@ -136,6 +137,12 @@ export default {
 
   .left-menu{
     padding-left: 50px;
+    float: left;
+    height: 100%;
+    line-height: 50px;
+    width: 80%;
+  }
+  .left-menu-mobile{
     float: left;
     height: 100%;
     line-height: 50px;

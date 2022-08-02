@@ -69,7 +69,7 @@ export const constantRoutes = [
       {
         path: '/salish/blog',
         component: () => import('@/views/blogui/blog/index'),
-        name: 'Index',
+        name: 'blog',
       }
     ]
   },
@@ -107,6 +107,18 @@ export const constantRoutes = [
         path: 'blogContent',
         component: () => import('@/views/blogui/blog/blog'),
         name: 'blogContent',
+      }
+    ]
+  },
+  {
+    path: '/salish/',
+    component: Layout,
+    redirect: 'index',
+    children: [
+      {
+        path: 'category',
+        component: () => import('@/views/blogui/category/index'),
+        name: 'category',
       }
     ]
   },
@@ -214,11 +226,6 @@ export const dynamicRoutes = [
   }
 ]
 
-// 防止连续点击多次路由报错
-let routerPush = Router.prototype.push;
-Router.prototype.push = function push(location) {
-  return routerPush.call(this, location).catch(err => err)
-}
 
 export default new Router({
   mode: 'history', // 去掉url中的#

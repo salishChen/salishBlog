@@ -42,6 +42,9 @@ public interface ITTagService extends IService<TTag> {
 	 */
 	Boolean updateByEditBo(TTagEditBo bo);
 
+	Boolean increaseTimes(Long id);
+	Boolean decreaseTimes(Long id);
+
 	/**
 	 * 校验并删除数据
 	 * @param ids 主键集合
@@ -49,4 +52,6 @@ public interface ITTagService extends IService<TTag> {
 	 * @return
 	 */
 	Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
+
+
 }
