@@ -17,8 +17,8 @@ export default {
       default: ''
     },
     tagId:{
-      type: String,
-      default: ''
+      type: [Number,String],
+      default: undefined
     }
   },
   computed: {
@@ -26,7 +26,7 @@ export default {
   methods:{
     searchTag(){
       if (this.tagId!==''&&this.tagId!==undefined){
-          this.$router.replace({path: "/salish/category", query: {tagId: this.tagId}})
+          this.$router.push({path: "/salish/category/"+this.tagId})
       }
     }
   }
@@ -36,14 +36,15 @@ export default {
 <style>
 .blog-tag{
   display: inline-block;
-  margin-left: 5px;
+  margin: 0 0 5px 5px;
   width: 36px;
   height: 25px;
   border-radius: 2px;
   color: #FFFFFF;
   font-weight: 200;
   text-align: center;
-  font-size: 8px;
+  font-size: 10px;
   padding-top: 5px;
+  font-family: none;
 }
 </style>

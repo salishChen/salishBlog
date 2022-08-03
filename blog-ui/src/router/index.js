@@ -116,7 +116,7 @@ export const constantRoutes = [
     redirect: 'index',
     children: [
       {
-        path: 'category',
+        path: 'category/:tagId(\\d+)',
         component: () => import('@/views/blogui/category/index'),
         name: 'category',
       }

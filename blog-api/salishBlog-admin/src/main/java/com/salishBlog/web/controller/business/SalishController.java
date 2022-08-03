@@ -69,7 +69,7 @@ public class SalishController extends BaseController {
     @GetMapping("/blog/listInfo")
     public TableDataInfo<TBlog> listInfo(TBlog bo) {
         startPage();
-        List<TBlog> list = iTBlogService.selectBlogByTag(bo);
+        List<TBlog> list = iTBlogService.queryInfo(bo);
         return getDataTable(list);
     }
 

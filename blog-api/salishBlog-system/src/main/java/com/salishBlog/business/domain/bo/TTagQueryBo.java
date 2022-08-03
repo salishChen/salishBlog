@@ -43,5 +43,7 @@ public class TTagQueryBo extends BaseEntity {
 	/** 访问次数 */
 	@ApiModelProperty("访问次数")
 	private Integer times;
-
+	/** 是否删除 */
+	@ApiModelProperty("是否排序")
+	private Boolean timesAsc;
 }

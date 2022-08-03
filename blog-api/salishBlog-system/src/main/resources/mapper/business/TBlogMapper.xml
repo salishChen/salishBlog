@@ -29,7 +29,9 @@
                 </foreach>
             </if>
             <if test="title != null">and title like #{title}</if>
+            <if test="blogType != null">and blog_type =#{blogType}</if>
         </where>
+        order by create_time desc
     </select>
 
     <select id="queryInfo" resultMap="TBlogResult" parameterType="com.salishBlog.business.domain.TBlog">
@@ -42,7 +44,9 @@
                 </foreach>
             </if>
             <if test="title != null">and title like #{title}</if>
+            <if test="blogType != null">and blog_type =#{blogType}</if>
         </where>
+        order by create_time desc
     </select>
 
 </mapper>

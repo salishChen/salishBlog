@@ -11,8 +11,15 @@
             {{ item.summary }}
           </div>
           <template v-if="item.tagId!='' && item.tagId!=undefined">
-            <div v-for="tagId in item.tagIds">
-              <BlogTag :tag-color="tags[tagId].tagColor" :tag-name="tags[tagId].tag" :tag-id="tagId"/>
+            <div class="left-block">
+              <div v-for="tagId in item.tagIds">
+                <BlogTag :tag-color="tags[tagId].tagColor" :tag-name="tags[tagId].tag" :tag-id="tagId"/>
+              </div>
+            </div>
+            <div class="right-block">
+              <div class="blog-summary">
+                <i class="el-icon-date"/>   {{item.createTime}}
+              </div>
             </div>
           </template>
         </el-main>
@@ -114,5 +121,15 @@ export default {
 
 .pagination-container {
   background-color: transparent !important;
+}
+.left-block{
+  display: inline-block;
+  position: relative;
+  float: left;
+}
+.right-block{
+  display: inline-block;
+  position: relative;
+  float: right;
 }
 </style>

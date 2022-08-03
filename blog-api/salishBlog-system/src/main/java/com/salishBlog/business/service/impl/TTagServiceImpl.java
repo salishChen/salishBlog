@@ -41,6 +41,7 @@ public class TTagServiceImpl extends ServiceImpl<TTagMapper, TTag> implements IT
         lqw.eq(StrUtil.isNotBlank(bo.getTag()), TTag::getTag, bo.getTag());
         lqw.eq(StrUtil.isNotBlank(bo.getTagColor()), TTag::getTagColor, bo.getTagColor());
         lqw.eq(bo.getTimes() != null, TTag::getTimes, bo.getTimes());
+        lqw.orderByDesc(bo.getTimesAsc()!=null && bo.getTimesAsc(),TTag::getTimes);
         return entity2Vo(this.list(lqw));
     }
 

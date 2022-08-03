@@ -36,7 +36,7 @@ export default {
     };
   },
   created() {
-    listTag().then(response => {
+    listTag({timesAsc:true}).then(response => {
       this.tagsOptions = response.rows;
     });
   }

@@ -1,5 +1,10 @@
 <template>
   <div class="app-container">
+    <el-tabs v-model="activeName" @tab-click="handleTabClick">
+      <el-tab-pane label="全部" name=""/>
+      <el-tab-pane v-for="item in blogTypeOptions" :label="item.dictLabel" :name="item.dictValue"/>
+
+    </el-tabs>
     <div class="blog-container" v-if="blogList.length>0" v-for="item in blogList" @click="openBlog(item.id)">
       <div class="blog-title">{{ item.title }}</div>
       <el-container>
@@ -13,7 +18,7 @@
           <template v-if="item.tagId!='' && item.tagId!=undefined">
             <div class="left-block">
               <div v-for="tagId in item.tagIds">
-                <BlogTag :tag-color="tags[tagId].tagColor" :tag-name="tags[tagId].tag" :tag-id="tagId"/>
+                <BlogTag :tag-color="tags[tagId].tagColor" :tag-name="tags[tagId].tag" :tag-id="Number(tagId)"/>
               </div>
             </div>
             <div class="right-block">
@@ -51,8 +56,10 @@ export default {
     return {
       // 总条数
       total: 0,
+      activeName:'',
       // 博客表格数据
       blogList: [],
+      blogTypeOptions: [],
       tags: {},
       // 查询参数
       queryParams: {
@@ -64,22 +71,22 @@ export default {
     };
   },
   created() {
+    this.tagId = this.$route.params && this.$route.params.tagId;
+    if (this.tagId>0){
+      this.queryParams.tagId = this.tagId;
+    }
     getDictData("blog_type").then(response => {
       this.blogTypeOptions = response.data;
     });
-    listTag().then(response => {
+    listTag().then(async response => {
       let tagsOptions = []
       tagsOptions = response.rows;
       tagsOptions.forEach(item => {
         this.tags[item.id] = item;
       })
-    });
-  },
-  mounted() {
-    this.tagId = this.$route.query.tagId;
-    this.queryParams.tagId = this.tagId;
-    this.getList();
+      await this.getList();
 
+    });
   },
   methods: {
     /** 查询博客列表 */
@@ -93,6 +100,10 @@ export default {
     },
     openBlog(id) {
       this.$router.push({path: "/salish/blogContent", query: {blogId: id}})
+    },
+    handleTabClick(tab, event){
+      this.queryParams.blogType = tab.name;
+      this.getList();
     }
   }
 };
