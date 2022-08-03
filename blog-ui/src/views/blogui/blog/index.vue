@@ -90,7 +90,7 @@ export default {
   }
 };
 </script>
-<style>
+<style scoped>
 .blog-container {
   border-radius: 2px;
   background-color: #FFFFFF;
@@ -123,7 +123,7 @@ export default {
   background-color: transparent !important;
 }
 .left-block{
-  display: inline-block;
+  display: inline-flex;
   position: relative;
   float: left;
 }

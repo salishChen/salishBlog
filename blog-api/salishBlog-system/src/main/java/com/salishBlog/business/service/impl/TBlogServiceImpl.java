@@ -102,13 +102,13 @@ public class TBlogServiceImpl extends ServiceImpl<TBlogMapper, TBlog> implements
     public Boolean updateByEditBo(TBlogEditBo bo) {
         TBlogVo tBlogVo = queryById(bo.getId());
         if (tBlogVo.getTagId()!=null&& !tBlogVo.getTagId().equals("")){
-            String[] tagIds = tBlogVo.getTagId().split("'");
+            String[] tagIds = tBlogVo.getTagId().split(",");
             for (String id:tagIds) {
                 tagService.decreaseTimes(Long.parseLong(id));
             }
         }
         if (bo.getTagId()!=null&& !bo.getTagId().equals("")){
-            String[] tagIds = bo.getTagId().split("'");
+            String[] tagIds = bo.getTagId().split(",");
             for (String id:tagIds) {
                 tagService.increaseTimes(Long.parseLong(id));
             }

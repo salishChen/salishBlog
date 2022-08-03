@@ -140,7 +140,7 @@ export default {
   background-color: transparent !important;
 }
 .left-block{
-  display: inline-block;
+  display: inline-flex;
   position: relative;
   float: left;
 }
