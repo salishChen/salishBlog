@@ -37,14 +37,15 @@ export default {
 .blog-tag{
   display: inline-block;
   margin: 0 0 5px 5px;
-  width: 36px;
+  width: auto;
   height: 25px;
+  line-height: 14px !important;
   border-radius: 2px;
   color: #FFFFFF;
   font-weight: 200;
   text-align: center;
   font-size: 10px;
-  padding-top: 5px;
+  padding: 5px;
   font-family: none;
 }
 </style>
