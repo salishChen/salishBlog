@@ -16,7 +16,8 @@
         <el-menu-item index="9">关于我</el-menu-item>
       </el-menu>
     </div>
-    <div class="right-menu">
+
+    <div class="right-menu" v-if="device!=='mobile'">
       <template>
         <screenfull id="screenfull" class="right-menu-item hover-effect"/>
         <el-tooltip content="工作台" class="right-menu-item hover-effect" @click.native="toWorkspace">

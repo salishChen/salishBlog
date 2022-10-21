@@ -1,10 +1,10 @@
 <template>
   <div class="app-container">
-    <el-tabs v-model="activeName" @tab-click="handleTabClick">
+    <el-tabs v-if="tagId==0" v-model="activeName" @tab-click="handleTabClick">
       <el-tab-pane label="全部" name=""/>
       <el-tab-pane v-for="item in blogTypeOptions" :label="item.dictLabel" :name="item.dictValue"/>
-
     </el-tabs>
+
     <div class="blog-container" v-if="blogList.length>0" v-for="item in blogList" @click="openBlog(item.id)">
       <div class="blog-title">{{ item.title }}</div>
       <el-container>
@@ -22,7 +22,7 @@
               </div>
             </div>
             <div class="right-block">
-              <div class="blog-summary">
+              <div class="blog-time">
                 <i class="el-icon-date"/>   {{item.createTime}}
               </div>
             </div>
@@ -61,6 +61,7 @@ export default {
       blogList: [],
       blogTypeOptions: [],
       tags: {},
+      tagId:0,
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -85,7 +86,6 @@ export default {
         this.tags[item.id] = item;
       })
       await this.getList();
-
     });
   },
   methods: {
@@ -108,45 +108,4 @@ export default {
   }
 };
 </script>
-<style scoped>
-.blog-container {
-  background-color: #FFFFFF;
-  margin: 10px;
-  padding: 10px;
-  height: 160px;
-}
-
-.blog-title {
-  margin-top: 5px;
-  margin-left: 10px;
-  font-size: 20px;
-  font-weight: 500;
-}
-
-.blog-cover {
-  height: 90px;
-  width: 120px;
-}
-
-.blog-summary {
-  margin: 5px;
-  height: 60px;
-  font-size: 13px;
-  font-weight: 200;
-  color: #666;
-}
-
-.pagination-container {
-  background-color: transparent !important;
-}
-.left-block{
-  display: inline-flex;
-  position: relative;
-  float: left;
-}
-.right-block{
-  display: inline-block;
-  position: relative;
-  float: right;
-}
-</style>
+<style src="@/style/blog.css" scoped></style>

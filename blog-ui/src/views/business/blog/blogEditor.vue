@@ -27,6 +27,12 @@
               <i v-else class="el-icon-plus avatar-uploader-icon"></i>
             </el-upload>
           </el-form-item>
+
+            <el-form-item>
+              <el-input v-model="imgUrl" style="width: 80%"></el-input>
+              <el-button style="padding-left: 20px" type="primary" @click="addOutsideUrl">添加外链url</el-button>
+            </el-form-item>
+
         </el-col>
         <el-col :span="7">
           <el-form-item label="标签" prop="tags">
@@ -86,6 +92,7 @@ export default {
   data() {
     return {
       blogId: '',
+      imgUrl:'',
       uploadUrl: process.env.VUE_APP_BASE_API + "/common/upload",
       headers: { Authorization: "Bearer " + getToken() },
       form: {
@@ -158,6 +165,10 @@ export default {
     },
     resetForm() {
       this.$refs['elForm'].resetFields()
+    },
+    addOutsideUrl(){
+      this.form.cover=this.imgUrl
+      this.imgUrl="";
     },
     coverBeforeUpload(file) {
       let isRightSize = file.size / 1024 / 1024 < 4

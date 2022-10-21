@@ -8,7 +8,7 @@
         <div :class="device==='mobile'?'blog-main-mobile-container':'blog-main-container'">
           <app-main/>
         </div>
-        <tag-cloud class="tag-cloud"/>
+        <tag-cloud v-if="device!=='mobile'" class="tag-cloud"/>
         <right-panel>
           <settings/>
         </right-panel>
@@ -112,6 +112,7 @@ export default {
   margin: 0 0 0 15%;
   display: inline-block;
   position: relative;
+  padding-bottom: 50px;
 }
 .blog-main-mobile-container {
   width: 100%;
