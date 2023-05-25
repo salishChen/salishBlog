@@ -88,6 +88,7 @@ import {addBlog, updateBlog, getBlog} from "@/api/business/blog";
 import Markdown from "@/components/Markdowm";
 export default {
   components: {Markdown},
+  name:'editBlog',
   props: [],
   data() {
     return {
@@ -170,12 +171,14 @@ export default {
           this.form.id = this.blogId;
             updateBlog(this.form).then(response => {
               this.msgSuccess("修改成功");
-              this.$router.push({ path: "/blog"});
+              this.$store.dispatch('tagsView/delView', this.$route)
+              this.$router.replace({ path: "/blog"});
             });
         } else {
           addBlog(this.form).then(response => {
             this.msgSuccess("新增成功");
-            this.$router.push({ path: "/blog"});
+            this.$store.dispatch('tagsView/delView', this.$route)
+            this.$router.replace({ path: "/blog"});
           });
         }
       })
