@@ -14,9 +14,9 @@ export default {
     };
   },
   methods: {
-    goTarget(href) {
+   /* goTarget(href) {
       window.open(href, "_blank");
-    },
+    },*/
   },
 };
 </script>

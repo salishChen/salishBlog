@@ -55,13 +55,13 @@
             <el-select v-model="form.contentType" placeholder="请选择内容类型" clearable
                        :style="{width: '100%'}">
               <el-option v-for="(item, index) in contentTypeOptions" :key="index" :label="item.dictLabel"
-                         :value="Number(item.dictValue)" :disabled="item.disabled"></el-option>
+                         :value="item.dictValue" :disabled="item.disabled"></el-option>
             </el-select>
           </el-form-item>
         </el-col>
         <el-col :span="22">
           <el-form-item label="博文内容" prop="content">
-            <Markdown v-if="form.contentType==1" :content.sync="form.content" min-height="400px"></Markdown>
+            <Markdown v-if="form.contentType==1" :content.sync="form.content" :save="save" min-height="400px"></Markdown>
 <!--            <v-md-editor v-if="form.contentType==1"   @upload-image="handleUploadImage" ></v-md-editor>-->
             <Editor v-if="form.contentType==2||(form.contentType==''||form.contentType==undefined)"
                     v-model="form.content" :classs="'avatar-uploader'" :minHeight="150"/>
@@ -102,7 +102,7 @@ export default {
         tags: [],
         tagId: undefined,
         blogType: undefined,
-        contentType: 2,
+        contentType: '1',
         content: undefined,
       },
       rules: {
@@ -144,6 +144,23 @@ export default {
   mounted() {
   },
   methods: {
+    save() {
+      this.$refs['elForm'].validate(valid => {
+        if (!valid) return
+        // TODO 提交表单
+        this.form.tagId = this.tags.toString();
+        if (this.blogId != undefined && this.blogId != "") {
+          this.form.id = this.blogId;
+          updateBlog(this.form).then(response => {
+            this.msgSuccess("保存成功");
+          });
+        } else {
+          addBlog(this.form).then(response => {
+            this.msgSuccess("新增成功");
+          });
+        }
+      })
+    },
     submitForm() {
       this.$refs['elForm'].validate(valid => {
         if (!valid) return

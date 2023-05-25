@@ -1,29 +1,34 @@
 <template>
-  <v-md-editor v-model="blogContent" @change="changeContent"  @upload-image="handleUploadImage" :style="{minHeight:minHeight}"></v-md-editor>
+  <v-md-editor v-model="blogContent" @change="changeContent" @save="mdSave()" @upload-image="handleUploadImage"
+               :style="{minHeight:minHeight}"></v-md-editor>
 </template>
 
 <script>
 
 export default {
   name: "Markdown",
-  props:{
-    content:{
-      type:String,
-      default:""
+  props: {
+    content: {
+      type: String,
+      default: ""
     },
     /* 高度 */
     height: {
       type: String,
-      default: null,
+      default: null
     },
     /* 最小高度 */
     minHeight: {
       type: String,
-      default: null,
+      default: null
     },
+    save: {
+      type: Function,
+      default: null
+    }
   },
-  data(){
-    return{
+  data() {
+    return {
       // blogContent:"",
     }
   },
@@ -39,16 +44,20 @@ export default {
       }
     },
   },
-  watch:{
-
-  },
+  watch: {},
   mounted() {
   },
-  methods:{
-    handleUploadImage(){
+  methods: {
+    mdSave() {
+      console.log(this.save)
+      if (this.save) {
+        this.save();
+      }
+    },
+    handleUploadImage() {
 
     },
-    changeContent(){
+    changeContent() {
       // console.log(this.blogContent)
       // console.log(this.content)
       // this.$emit('content', this.blogContent)

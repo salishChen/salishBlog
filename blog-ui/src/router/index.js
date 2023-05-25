@@ -74,19 +74,19 @@ export const constantRoutes = [
     ]
   },
   {
-    path: '/index',
+    path: '/',
     component: Layout,
     redirect: 'index',
     children: [
       {
-        path: '',
+        path: 'index',
         component: () => import('@/views/index'),
-        name: 'Index',
-        meta: { title: '首页', icon: 'dashboard', affix: true }
+        name: '首页',
+        meta: { title: '首页', icon: 'dashboard',noCache: true,  affix: true }
       }
     ]
   },
-  {
+/*  {
     path: '/salish/',
     component: Layout,
     redirect: 'index',
@@ -97,7 +97,7 @@ export const constantRoutes = [
         name: 'blog',
       }
     ]
-  },
+  },*/
   {
     path: '/salish/',
     component: Layout,

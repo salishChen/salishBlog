@@ -10,8 +10,14 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
+      <el-form-item label="博客类型" prop="blogType">
+        <el-select v-model="queryParams.blogType" size="small" placeholder="请选择博客类型" clearable :style="{width: '100%'}">
+          <el-option v-for="(item, index) in blogTypeOptions" :key="index" :label="item.dictLabel"
+                     :value="item.dictValue" :disabled="item.disabled"></el-option>
+        </el-select>
+      </el-form-item>
       <el-form-item label="标签" prop="tagId">
-        <el-select v-model="queryParams.tagId" placeholder="请选择标签" clearable :style="{width: '100%'}">
+        <el-select v-model="queryParams.tagId" size="small" placeholder="请选择标签" clearable :style="{width: '100%'}">
           <el-option v-for="(item, index) in tagsOptions" :key="index" :label="item.tag"
                      :value="item.id" :disabled="item.disabled"></el-option>
         </el-select>
@@ -165,6 +171,12 @@ export default {
         this.tags[item.id] = item;
       })
     });
+    // this.getList();
+  },
+  mounted() {
+    this.getList();
+  },
+  activated() {
     this.getList();
   },
   methods: {

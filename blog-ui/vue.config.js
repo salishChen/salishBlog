@@ -44,13 +44,6 @@ module.exports = {
     },
     disableHostCheck: true
   },
-  css: {
-    loaderOptions: {
-      sass: {
-        sassOptions: { outputStyle: "expanded" }
-      }
-    }
-  },
   configureWebpack: {
     name: name,
     resolve: {
@@ -84,11 +77,29 @@ module.exports = {
       .include.add(resolve('src/assets/icons'))
       .end()
       .use('svg-sprite-loader')
+
       .loader('svg-sprite-loader')
       .options({
         symbolId: 'icon-[name]'
       })
       .end()
+
+    // set preserveWhitespace
+    config.module
+      .rule('vue')
+      .use('vue-loader')
+      .loader('vue-loader')
+      .tap(options => {
+        options.compilerOptions.preserveWhitespace = true
+        return options
+      })
+      .end()
+
+    config
+      // https://webpack.js.org/configuration/devtool/#development
+      .when(process.env.NODE_ENV === 'development',
+        config => config.devtool('cheap-source-map')
+      )
 
     config
       .when(process.env.NODE_ENV !== 'development',
@@ -125,11 +136,7 @@ module.exports = {
                 }
               }
             })
-          config.optimization.runtimeChunk('single'),
-          {
-             from: path.resolve(__dirname, './public/robots.txt'), //防爬虫文件
-             to: './' //到根目录下
-          }
+          config.optimization.runtimeChunk('single')
         }
       )
   }
