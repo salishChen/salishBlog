@@ -103,12 +103,12 @@ public class TBlogController extends BaseController {
     @PreAuthorize("@ss.hasPermi('tBlog:blog:add')")
     @Log(title = "博客", businessType = BusinessType.INSERT)
     @PostMapping()
-    public AjaxResult add(@RequestBody TBlogAddBo bo) {
+    public AjaxResult<TBlog> add(@RequestBody TBlogAddBo bo) {
         LoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
         SysUser user = loginUser.getUser();
         bo.setCreateBy(user.getNickName());
         bo.setCreateTime(DateUtils.getNowDate());
-        return toAjax(iTBlogService.insertByAddBo(bo) ? 1 : 0);
+        return AjaxResult.success(iTBlogService.insertByAddBoReturn(bo));
     }
 
     /**

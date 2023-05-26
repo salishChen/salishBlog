@@ -40,6 +40,8 @@ public interface ITBlogService extends IService<TBlog> {
 	 * @return
 	 */
 	Boolean insertByAddBo(TBlogAddBo bo);
+	
+	TBlog insertByAddBoReturn(TBlogAddBo bo);
 
 	/**
 	 * 根据编辑业务对象修改博客

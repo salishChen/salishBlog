@@ -152,11 +152,14 @@ export default {
         this.form.tagId = this.tags.toString();
         if (this.blogId != undefined && this.blogId != "") {
           this.form.id = this.blogId;
-          updateBlog(this.form).then(response => {
+          updateBlog(this.form).then(res => {
             this.msgSuccess("保存成功");
           });
         } else {
-          addBlog(this.form).then(response => {
+          addBlog(this.form).then(res => {
+            if (res.code==200){
+              this.blogId = res.data.id
+            }
             this.msgSuccess("新增成功");
           });
         }
