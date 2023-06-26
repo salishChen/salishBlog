@@ -46,6 +46,9 @@ private static final long serialVersionUID=1L;
     @TableField(fill = FieldFill.INSERT)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
+
+    @TableField(exist = false)
+    private String time;
     /** 创建人 */
     @TableField(fill = FieldFill.INSERT)
     private String createBy;

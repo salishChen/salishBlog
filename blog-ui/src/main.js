@@ -49,7 +49,7 @@ import githubTheme from '@kangc/v-md-editor/lib/theme/github.js';
 import '@kangc/v-md-editor/lib/theme/style/github.css';
 
 // highlightjs
-import hljs from 'highlight.js';
+import hljs1 from 'highlight.js';
 
 // codemirror 编辑器的相关资源
 import Codemirror from 'codemirror';
@@ -93,7 +93,6 @@ Vue.prototype.selectDictLabels = selectDictLabels
 Vue.prototype.download = download
 Vue.prototype.handleTree = handleTree
 
-
 Vue.prototype.IdSuccess = function (msg) {
   this.$message({ showClose: true, message: msg, type: "success" });
 }
@@ -111,7 +110,7 @@ Vue.prototype.msgInfo = function (msg) {
 
 VMdEditor.Codemirror = Codemirror;
 VMdEditor.use(githubTheme, {
-  Hljs: hljs,
+  Hljs: hljs1,
 });
 
 // 全局组件挂载

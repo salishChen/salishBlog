@@ -1,14 +1,18 @@
 package com.salishBlog.business.service;
 
+
+import com.alibaba.fastjson2.JSONObject;
 import com.salishBlog.business.domain.TBlog;
 import com.salishBlog.business.domain.vo.TBlogVo;
 import com.salishBlog.business.domain.bo.TBlogQueryBo;
 import com.salishBlog.business.domain.bo.TBlogAddBo;
 import com.salishBlog.business.domain.bo.TBlogEditBo;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.salishBlog.common.core.domain.AjaxResult;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 博客Service接口
@@ -34,13 +38,16 @@ public interface ITBlogService extends IService<TBlog> {
 	List<TBlog> queryInfo(TBlog tBlog) ;
 
 	List <TBlog> selectBlogByTag(TBlog tBlog);
+
+	/**归档*/
+	AjaxResult interfile(TBlog tBlog);
 	/**
 	 * 根据新增业务对象插入博客
 	 * @param bo 博客新增业务对象
 	 * @return
 	 */
 	Boolean insertByAddBo(TBlogAddBo bo);
-	
+
 	TBlog insertByAddBoReturn(TBlogAddBo bo);
 
 	/**

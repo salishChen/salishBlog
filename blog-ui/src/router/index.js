@@ -64,14 +64,7 @@ export const constantRoutes = [
   {
     path: '',
     component: Layout,
-    redirect: 'salish/blog',
-    children: [
-      {
-        path: '/salish/blog',
-        component: () => import('@/views/blogui/blog/index'),
-        name: 'blog',
-      }
-    ]
+    redirect: 'salish/blog'
   },
   {
     path: '/',
@@ -86,39 +79,35 @@ export const constantRoutes = [
       }
     ]
   },
-/*  {
+  {
     path: '/salish/',
     component: Layout,
     redirect: 'index',
     children: [
-      {
+      { //博客首页
         path: 'blog',
         component: () => import('@/views/blogui/blog/index'),
         name: 'blog',
-      }
-    ]
-  },*/
-  {
-    path: '/salish/',
-    component: Layout,
-    redirect: 'index',
-    children: [
-      {
-        path: 'blogContent',
-        component: () => import('@/views/blogui/blog/blog'),
-        name: 'blogContent',
-      }
-    ]
-  },
-  {
-    path: '/salish/',
-    component: Layout,
-    redirect: 'index',
-    children: [
-      {
+      },
+      { //归档
+        path: 'interfile',
+        component: () => import('@/views/blogui/interfile/index'),
+        name: 'interfile',
+      },
+      { //类别
         path: 'category/:tagId(\\d+)',
         component: () => import('@/views/blogui/category/index'),
         name: 'category',
+      },
+      { //博客内容
+        path: 'blogContent',
+        component: () => import('@/views/blogui/blog/blog'),
+        name: 'blogContent',
+      },
+      { //博客内容
+        path: 'fillPit',
+        component: () => import('@/views/blogui/fillPit/index'),
+        name: 'fillPit',
       }
     ]
   },

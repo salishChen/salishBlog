@@ -18,6 +18,15 @@ export function listBlogInfo(query) {
   })
 }
 
+// 归档
+export function interfileBlog(query) {
+  return request({
+    url: '/salish/blog/interfile',
+    method: 'get',
+    params: query
+  })
+}
+
 // 查询博客详细
 export function getBlog(id) {
   return request({
@@ -40,6 +49,23 @@ export function getTag(id) {
   return request({
     url: '/salish/tag/' + id,
     method: 'get'
+  })
+}
+
+// 坑标签列表
+export function getPitTags() {
+  return request({
+    url: '/salish/pit/tag',
+    method: 'get'
+  })
+}
+
+// 查询标签详细
+export function listPits(query) {
+  return request({
+    url: '/salish/pit/pits' ,
+    method: 'get',
+    params: query
   })
 }
 

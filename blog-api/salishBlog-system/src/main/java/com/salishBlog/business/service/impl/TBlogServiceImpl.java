@@ -2,10 +2,12 @@ package com.salishBlog.business.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
-import com.github.yulichang.query.interfaces.MPJJoin;
-import com.github.yulichang.wrapper.MPJJoinLambdaQueryWrapper;
-import com.salishBlog.business.domain.TBlogInfo;
+import com.alibaba.fastjson2.JSONObject;
+import com.github.pagehelper.PageInfo;
 import com.salishBlog.business.service.ITTagService;
+import com.salishBlog.common.constant.HttpStatus;
+import com.salishBlog.common.core.domain.AjaxResult;
+import com.salishBlog.common.core.page.TableDataInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -20,9 +22,7 @@ import com.salishBlog.business.mapper.TBlogMapper;
 import com.salishBlog.business.domain.vo.TBlogVo;
 import com.salishBlog.business.service.ITBlogService;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -65,6 +65,27 @@ public class TBlogServiceImpl extends ServiceImpl<TBlogMapper, TBlog> implements
         return this.baseMapper.selectBlogByTag(tBlog);
     }
 
+    @Override
+    public AjaxResult interfile(TBlog tBlog){
+        List<TBlog> blogs = this.baseMapper.interfile(tBlog);
+        Map<String, List<TBlog>> collect = blogs.stream().collect(Collectors.groupingBy(TBlog::getTime));
+        List<List<TBlog>> collect1 = new ArrayList<>();
+
+
+        ListIterator<Map.Entry<String, List<TBlog>>> li = new ArrayList<>(collect.entrySet()).listIterator(collect.size());
+
+        while(li.hasPrevious()) {
+            Map.Entry<String, List<TBlog>> entry = li.previous();
+            collect1.add(entry.getValue());
+        }
+
+        JSONObject object1 = new JSONObject();
+        object1.put("total",new PageInfo<>(blogs).getTotal());
+        object1.put("data",collect1);
+
+        return AjaxResult.success(object1);
+    }
+
     /**
     * 实体类转化成视图对象
     *
@@ -100,8 +121,8 @@ public class TBlogServiceImpl extends ServiceImpl<TBlogMapper, TBlog> implements
 
     @Override
     public TBlog insertByAddBoReturn(TBlogAddBo bo) {
-        if (bo.getTagId()!=null&& !bo.getTagId().equals("")){
-            String[] tagIds = bo.getTagId().split("'");
+        if (StrUtil.isNotBlank(bo.getTagId())){
+            String[] tagIds = bo.getTagId().split(",");
             for (String id:tagIds) {
                 tagService.increaseTimes(Long.parseLong(id));
             }

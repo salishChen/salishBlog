@@ -44,10 +44,6 @@ export default {
   },
   created() {
     const blogId = this.$route.query.blogId;
-    console.log(blogId)
-    getDictData("blog_type").then(response => {
-      this.blogTypeOptions = response.data;
-    });
     listTag().then(response => {
       let tagsOptions=[]
       tagsOptions = response.rows;

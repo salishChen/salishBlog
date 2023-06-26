@@ -16,5 +16,7 @@ public interface TBlogMapper extends MPJBaseMapper<TBlog> {
 
     List<TBlog> selectBlogByTag(TBlog tBlog);
 
+    List<TBlog> interfile(TBlog tBlog);
+
     List<TBlog> queryInfo(TBlog tBlog);
 }

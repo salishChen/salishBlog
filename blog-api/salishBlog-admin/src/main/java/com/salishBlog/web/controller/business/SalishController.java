@@ -1,13 +1,13 @@
 package com.salishBlog.web.controller.business;
 
+import com.alibaba.fastjson2.JSONObject;
 import com.salishBlog.business.domain.TBlog;
-import com.salishBlog.business.domain.bo.TBlogAddBo;
-import com.salishBlog.business.domain.bo.TBlogEditBo;
-import com.salishBlog.business.domain.bo.TBlogQueryBo;
-import com.salishBlog.business.domain.bo.TTagQueryBo;
+import com.salishBlog.business.domain.bo.*;
 import com.salishBlog.business.domain.vo.TBlogVo;
+import com.salishBlog.business.domain.vo.TFillPitVo;
 import com.salishBlog.business.domain.vo.TTagVo;
 import com.salishBlog.business.service.ITBlogService;
+import com.salishBlog.business.service.ITFillPitService;
 import com.salishBlog.business.service.ITTagService;
 import com.salishBlog.common.annotation.Log;
 import com.salishBlog.common.core.controller.BaseController;
@@ -52,6 +52,8 @@ public class SalishController extends BaseController {
     private final ITBlogService iTBlogService;
     @Autowired
     private ISysDictTypeService dictTypeService;
+    @Autowired
+    private ITFillPitService iTFillPitService;
 
     /**
      * 查询博客列表
@@ -61,6 +63,15 @@ public class SalishController extends BaseController {
         startPage();
         List<TBlog> list = iTBlogService.selectBlogByTag(bo);
         return getDataTable(list);
+    }
+
+    /**
+     * 博客归档
+     */
+    @GetMapping("/blog/interfile")
+    public AjaxResult interfile(TBlog bo) {
+        startPage();
+        return iTBlogService.interfile(bo);
     }
 
     /**
@@ -103,5 +114,24 @@ public class SalishController extends BaseController {
             data = new ArrayList<SysDictData>();
         }
         return AjaxResult.success(data);
+    }
+
+    /**
+     * 查询填坑标签列表
+     */
+    @GetMapping("/pit/tag")
+    public AjaxResult getPitTags() {
+        return AjaxResult.success(iTFillPitService.getTags());
+    }
+
+    /**
+     * 查询填坑列表
+     */
+    @ApiOperation("查询填坑列表")
+    @GetMapping("/pit/pits")
+    public TableDataInfo<TFillPitVo> list(TFillPitQueryBo bo) {
+        startPage();
+        List<TFillPitVo> list = iTFillPitService.queryList(bo);
+        return getDataTable(list);
     }
 }

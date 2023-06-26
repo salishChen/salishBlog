@@ -1,7 +1,7 @@
 <template>
   <div :class="classObj" class="app-wrapper" :style="{'--current-color': theme}">
     <template v-if="defaultPage==1 || defaultPage==undefined">
-      <div :class="{hasTagsView:needTagsView,sidebarHide:sidebar.hide}" class="" style="background-color: #f1f1f1">
+      <div :class="{hasTagsView:needTagsView,sidebarHide:sidebar.hide}" style="background-color: #f1f1f1">
         <div :class="{'fixed-header':fixedHeader}">
           <blog-navbar/>
         </div>
@@ -22,7 +22,7 @@
           <navbar/>
           <tags-view v-if="needTagsView"/>
         </div>
-        <app-main/>
+        <app-main style="padding: 20px"/>
         <right-panel>
           <settings/>
         </right-panel>
@@ -112,7 +112,7 @@ export default {
   margin: 0 0 0 15%;
   display: inline-block;
   position: relative;
-  padding-bottom: 50px;
+  padding-bottom: 30px;
 }
 .blog-main-mobile-container {
   width: 100%;

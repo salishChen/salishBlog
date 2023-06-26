@@ -5,14 +5,16 @@
         :default-active="activeIndex"
         class="el-menu-demo"
         mode="horizontal"
-        @select="handleSelect"
+
         background-color="#fff"
         text-color="#3c3f41"
         :router="true"
         active-text-color="#2b2b2b">
         <el-menu-item index="/salish/blog" >博客</el-menu-item>
         <el-menu-item index="/salish/category/0">分类</el-menu-item>
-        <el-menu-item index="3">归档</el-menu-item>
+        <el-menu-item index="/salish/interfile">归档</el-menu-item>
+        <el-menu-item index="/salish/fillPit" >填坑
+        </el-menu-item>
         <el-menu-item index="9">关于我</el-menu-item>
       </el-menu>
     </div>

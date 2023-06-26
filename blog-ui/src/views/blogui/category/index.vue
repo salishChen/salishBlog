@@ -23,7 +23,7 @@
             </div>
             <div class="right-block">
               <div class="blog-time">
-                <i class="el-icon-date"/>   {{item.createTime}}
+                <i class="el-icon-date"/> {{ item.createTime }}
               </div>
             </div>
 
@@ -32,36 +32,38 @@
         </el-main>
       </el-container>
     </div>
-    <pagination
-      style="right: 20px"
-      v-show="total>0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
-      :limit.sync="queryParams.pageSize"
-      @pagination="getList"
-    />
+    <!--    <pagination
+          style="right: 20px"
+          v-show="total>0"
+          :total="total"
+          :page.sync="queryParams.pageNum"
+          :limit.sync="queryParams.pageSize"
+          @pagination="getList"
+        />-->
   </div>
 </template>
 
 <script>
-import {listBlog, listBlogInfo, listTag, getDictData} from "@/api/business/salish";
+import {listBlogInfo, listTag, getDictData} from "@/api/business/salish";
 import Editor from '@/components/Editor';
+import infiniteScroll from "@/views/dashboard/mixins/infiniteScroll";
 
 export default {
   name: "category",
   components: {
     Editor,
   },
+  mixins: [infiniteScroll],
   data() {
     return {
       // 总条数
       total: 0,
-      activeName:'',
+      activeName: '',
       // 博客表格数据
       blogList: [],
       blogTypeOptions: [],
       tags: {},
-      tagId:0,
+      tagId: 0,
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -73,7 +75,7 @@ export default {
   },
   created() {
     this.tagId = this.$route.params && this.$route.params.tagId;
-    if (this.tagId>0){
+    if (this.tagId > 0) {
       this.queryParams.tagId = this.tagId;
     }
     getDictData("blog_type").then(response => {
@@ -98,10 +100,17 @@ export default {
         this.loading = false;
       });
     },
+    getLasgPage() {
+      this.queryParams.pageNum = this.queryParams.pageNum + 1
+      listBlogInfo(this.queryParams).then(response => {
+        this.blogList = this.blogList.concat(response.rows)
+        this.total = response.total;
+      });
+    },
     openBlog(id) {
       this.$router.push({path: "/salish/blogContent", query: {blogId: id}})
     },
-    handleTabClick(tab, event){
+    handleTabClick(tab, event) {
       this.queryParams.blogType = tab.name;
       this.getList();
     }

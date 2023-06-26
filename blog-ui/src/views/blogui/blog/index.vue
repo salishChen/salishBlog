@@ -25,26 +25,28 @@
         </el-main>
       </el-container>
     </div>
-    <pagination
+<!--    <pagination
       style="right: 20px"
       v-show="total>0"
       :total="total"
       :page.sync="queryParams.pageNum"
       :limit.sync="queryParams.pageSize"
       @pagination="getList"
-    />
+    />-->
   </div>
 </template>
 
 <script>
 import {listBlog, listBlogInfo, listTag, getDictData} from "@/api/business/salish";
 import Editor from '@/components/Editor';
+import infiniteScroll from "@/views/dashboard/mixins/infiniteScroll";
 
 export default {
   name: "Blog",
   components: {
     Editor,
   },
+  mixins:[infiniteScroll],
   data() {
     return {
       // 总条数
@@ -62,9 +64,6 @@ export default {
     };
   },
   created() {
-    getDictData("blog_type").then(response => {
-      this.blogTypeOptions = response.data;
-    });
     listTag().then(response => {
       let tagsOptions = []
       tagsOptions = response.rows;
@@ -82,6 +81,13 @@ export default {
         this.blogList = response.rows;
         this.total = response.total;
         this.loading = false;
+      });
+    },
+    getLasgPage() {
+      this.queryParams.pageNum = this.queryParams.pageNum + 1
+      listBlogInfo(this.queryParams).then(response => {
+        this.blogList = this.blogList.concat(response.rows)
+        this.total = response.total;
       });
     },
     openBlog(id) {

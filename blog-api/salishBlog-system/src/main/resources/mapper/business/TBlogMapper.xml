@@ -14,6 +14,7 @@
         <result property="blogType" column="blog_type"/>
         <result property="contentType" column="content_type"/>
         <result property="createTime" column="create_time"/>
+        <result property="time" column="time"/>
         <result property="createBy" column="create_by"/>
         <result property="updateTime" column="update_time"/>
         <result property="updateBy" column="update_by"/>
@@ -21,7 +22,7 @@
     </resultMap>
 
     <select id="selectBlogByTag" resultMap="TBlogResult" parameterType="com.salishBlog.business.domain.TBlog">
-        select * from t_blog
+        select id,title,cover,summary,tag_id,blog_type,content_type,create_time from t_blog
         <where>
             <if test="tagIds != null">
                 <foreach item="tag" collection="tagIds" separator="and">
@@ -32,6 +33,15 @@
             <if test="blogType != null">and blog_type =#{blogType}</if>
         </where>
         order by create_time desc
+    </select>
+
+    <select id="interfile" resultMap="TBlogResult" parameterType="com.salishBlog.business.domain.TBlog">
+        SELECT
+            id,title,cover,summary,tag_id,blog_type,content_type,create_time,DATE_FORMAT(create_time,'%Y-%m') as time
+        FROM
+            t_blog
+        ORDER BY
+            create_time DESC
     </select>
 
     <select id="queryInfo" resultMap="TBlogResult" parameterType="com.salishBlog.business.domain.TBlog">
