@@ -83,6 +83,13 @@
             <artifactId>fastjson2</artifactId>
         </dependency>
 
+        <!-- 腾讯COS-->
+        <dependency>
+            <groupId>com.qcloud</groupId>
+            <artifactId>cos_api</artifactId>
+            <version>5.6.133</version>
+        </dependency>
+
         <!-- io常用工具类 -->
         <dependency>
             <groupId>commons-io</groupId>

@@ -83,6 +83,7 @@ export const constantRoutes = [
     path: '/salish/',
     component: Layout,
     redirect: 'index',
+    hidden: true,
     children: [
       { //博客首页
         path: 'blog',
