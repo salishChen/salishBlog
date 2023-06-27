@@ -1,9 +1,15 @@
 package com.salishBlog.web.controller.common;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.qcloud.cos.COSClient;
+import com.qcloud.cos.model.PutObjectRequest;
+import com.qcloud.cos.model.PutObjectResult;
+import com.salishBlog.common.utils.CosUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,13 +87,30 @@ public class CommonController
             String filePath = RuoYiConfig.getUploadPath();
             // 上传并返回新文件名称
             String fileName = FileUploadUtils.upload(filePath, file);
-            String url = serverConfig.getUrl() + fileName;
+
+            COSClient cosClient = CosUtil.initCos();
+            String bucketName = "salishblog-1258145903";
+            String key = "/salishblog"+fileName;
+            String replace = filePath.replace("/upload", "");
+            String replace2 = fileName.replace("/profile", replace);
+            File file1 = new File(replace2);
+            PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, key, file1);
+            PutObjectResult putObjectResult = cosClient.putObject(putObjectRequest);
+            cosClient.shutdown();
+            String url = "https://salishblog-1258145903.cos.ap-beijing.myqcloud.com/salishblog" + fileName;
+            AjaxResult ajax = AjaxResult.success();
+            ajax.put("fileName", fileName);
+            ajax.put("url", url);
+            return ajax;
+
+
+            /*String url = serverConfig.getUrl() + fileName;
             AjaxResult ajax = AjaxResult.success();
             ajax.put("url", url);
             ajax.put("fileName", fileName);
             ajax.put("newFileName", FileUtils.getName(fileName));
             ajax.put("originalFilename", file.getOriginalFilename());
-            return ajax;
+            return ajax;*/
         }
         catch (Exception e)
         {
