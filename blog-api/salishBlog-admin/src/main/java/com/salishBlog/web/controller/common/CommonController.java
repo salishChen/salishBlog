@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.qcloud.cos.COSClient;
 import com.qcloud.cos.model.PutObjectRequest;
 import com.qcloud.cos.model.PutObjectResult;
+import com.salishBlog.common.core.redis.RedisCache;
 import com.salishBlog.common.utils.CosUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +41,8 @@ public class CommonController
 
     @Autowired
     private ServerConfig serverConfig;
+    @Autowired
+    private RedisCache redisCache;
 
     private static final String FILE_DELIMETER = ",";
 
@@ -88,7 +91,9 @@ public class CommonController
             // 上传并返回新文件名称
             String fileName = FileUploadUtils.upload(filePath, file);
 
-            COSClient cosClient = CosUtil.initCos();
+            String secretId = redisCache.getCacheObject("sys_config:cos.secret.id").toString();
+            String secretKey = redisCache.getCacheObject("sys_config:cos.secret.key").toString();
+            COSClient cosClient = CosUtil.initCos(secretId,secretKey);
             String bucketName = "salishblog-1258145903";
             String key = "/salishblog"+fileName;
             String replace = filePath.replace("/upload", "");
