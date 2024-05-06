@@ -10,7 +10,7 @@
       </div>
       <div class="blog-content-title2">正文</div>
       <div class="blog-content-content">
-        <v-md-editor mode="preview"  v-model="blogContent.content"></v-md-editor>
+        <v-md-editor mode="preview" default-show-toc v-model="blogContent.content"></v-md-editor>
       </div>
     </div>
 

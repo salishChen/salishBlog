@@ -6,6 +6,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.springframework.util.AntPathMatcher;
 import com.salishBlog.common.constant.Constants;
 import com.salishBlog.common.core.text.StrFormatter;
@@ -580,4 +583,23 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils
         }
         return sb.toString();
     }
+
+    /**
+     * 字符串中提取url。
+     *
+     * @param s 原始字符串
+     * @return 返回文本中的url。
+     */
+    public static List<String> getUrls(String s){
+        ArrayList<String> strings = new ArrayList<>();
+        //编译正则字符串
+        Pattern p = Pattern.compile("(https?|ftp|file)://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]");
+        //利用正则去匹配
+        Matcher matcher = p.matcher(s);
+        while (matcher.find()){
+            strings.add(matcher.group());
+        }
+        return strings;
+    }
+
 }

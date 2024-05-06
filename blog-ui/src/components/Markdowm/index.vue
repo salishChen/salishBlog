@@ -60,9 +60,9 @@ export default {
       }
     },
     handleUploadImage(event, insertImage, files) {
-      console.log(event)
+      // console.log(event)
       // 拿到 files 之后上传到文件服务器，然后向编辑框中插入对应的内容
-      console.log(files);
+      // console.log(files);
 
       const file = files[0]
       const formData = new FormData()
