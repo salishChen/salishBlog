@@ -134,4 +134,6 @@ public class Constants
      */
     public static final String[] JOB_ERROR_STR = { "java.net.URL", "javax.naming.InitialContext", "org.yaml.snakeyaml",
             "org.springframework", "org.apache", "com.salishBlog.common.utils.file" };
+
+    public static final String COS_URL = "https://salishblog-1258145903.cos.ap-beijing.myqcloud.com";
 }

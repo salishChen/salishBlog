@@ -9,8 +9,8 @@ import org.springframework.stereotype.Component;
  * @author ruoyi
  */
 @Component
-@ConfigurationProperties(prefix = "ruoyi")
-public class RuoYiConfig
+@ConfigurationProperties(prefix = "salish")
+public class SalishConfig
 {
     /** 项目名称 */
     private String name;
@@ -26,6 +26,8 @@ public class RuoYiConfig
 
     /** 上传路径 */
     private static String profile;
+
+    private static String winProfile;
 
     /** 获取地址开关 */
     private static boolean addressEnabled;
@@ -80,7 +82,17 @@ public class RuoYiConfig
 
     public void setProfile(String profile)
     {
-        RuoYiConfig.profile = profile;
+        SalishConfig.profile = profile;
+    }
+
+    public static String getWinProfile()
+    {
+        return winProfile;
+    }
+
+    public void setWinProfile(String winProfile)
+    {
+        SalishConfig.winProfile = winProfile;
     }
 
     public static boolean isAddressEnabled()
@@ -90,7 +102,7 @@ public class RuoYiConfig
 
     public void setAddressEnabled(boolean addressEnabled)
     {
-        RuoYiConfig.addressEnabled = addressEnabled;
+        SalishConfig.addressEnabled = addressEnabled;
     }
 
     public static String getCaptchaType() {
@@ -98,7 +110,7 @@ public class RuoYiConfig
     }
 
     public void setCaptchaType(String captchaType) {
-        RuoYiConfig.captchaType = captchaType;
+        SalishConfig.captchaType = captchaType;
     }
 
     /**
@@ -131,5 +143,13 @@ public class RuoYiConfig
     public static String getUploadPath()
     {
         return getProfile() + "/upload";
+    }
+
+    /**
+     * 获取备份路径
+     */
+    public static String getBackupPath()
+    {
+        return getProfile() + "/backup";
     }
 }

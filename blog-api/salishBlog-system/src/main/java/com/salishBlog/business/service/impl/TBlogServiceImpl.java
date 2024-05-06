@@ -4,11 +4,18 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson2.JSONObject;
 import com.github.pagehelper.PageInfo;
+import com.qcloud.cos.COSClient;
+import com.qcloud.cos.model.PutObjectRequest;
 import com.salishBlog.business.service.ITTagService;
-import com.salishBlog.common.constant.HttpStatus;
+import com.salishBlog.common.constant.Constants;
 import com.salishBlog.common.core.domain.AjaxResult;
-import com.salishBlog.common.core.page.TableDataInfo;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.salishBlog.common.utils.CosUtil;
+import com.salishBlog.common.utils.ImageUtils;
+import com.salishBlog.common.utils.StringUtils;
+import com.salishBlog.common.utils.file.FileTypeUtils;
+import com.salishBlog.common.utils.file.MimeTypeUtils;
+import com.salishBlog.system.service.ISysConfigService;
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -22,6 +29,7 @@ import com.salishBlog.business.mapper.TBlogMapper;
 import com.salishBlog.business.domain.vo.TBlogVo;
 import com.salishBlog.business.service.ITBlogService;
 
+import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -34,11 +42,17 @@ import java.util.stream.Collectors;
 @Service
 public class TBlogServiceImpl extends ServiceImpl<TBlogMapper, TBlog> implements ITBlogService {
 
-    @Autowired
-    ITTagService tagService;
+
+    private final ITTagService tagService;
+    private final ISysConfigService configService;
+
+    public TBlogServiceImpl(ITTagService tagService, ISysConfigService configService) {
+        this.tagService = tagService;
+        this.configService = configService;
+    }
 
     @Override
-    public TBlogVo queryById(Long id){
+    public TBlogVo queryById(Long id) {
         TBlog db = this.baseMapper.selectById(id);
         return BeanUtil.toBean(db, TBlogVo.class);
     }
@@ -55,18 +69,19 @@ public class TBlogServiceImpl extends ServiceImpl<TBlogMapper, TBlog> implements
         lqw.eq(bo.getIsDelete() != null, TBlog::getIsDelete, bo.getIsDelete());
         return entity2Vo(this.list(lqw));
     }
+
     @Override
     public List<TBlog> queryInfo(TBlog tBlog) {
         return this.baseMapper.selectBlogByTag(tBlog);
     }
 
     @Override
-    public List <TBlog> selectBlogByTag(TBlog tBlog){
+    public List<TBlog> selectBlogByTag(TBlog tBlog) {
         return this.baseMapper.selectBlogByTag(tBlog);
     }
 
     @Override
-    public AjaxResult interfile(TBlog tBlog){
+    public AjaxResult interfile(TBlog tBlog) {
         List<TBlog> blogs = this.baseMapper.interfile(tBlog);
         Map<String, List<TBlog>> collect = blogs.stream().collect(Collectors.groupingBy(TBlog::getTime));
         List<List<TBlog>> collect1 = new ArrayList<>();
@@ -74,32 +89,32 @@ public class TBlogServiceImpl extends ServiceImpl<TBlogMapper, TBlog> implements
 
         ListIterator<Map.Entry<String, List<TBlog>>> li = new ArrayList<>(collect.entrySet()).listIterator(collect.size());
 
-        while(li.hasPrevious()) {
+        while (li.hasPrevious()) {
             Map.Entry<String, List<TBlog>> entry = li.previous();
             collect1.add(entry.getValue());
         }
 
         JSONObject object1 = new JSONObject();
-        object1.put("total",new PageInfo<>(blogs).getTotal());
-        object1.put("data",collect1);
+        object1.put("total", new PageInfo<>(blogs).getTotal());
+        object1.put("data", collect1);
 
         return AjaxResult.success(object1);
     }
 
     /**
-    * 实体类转化成视图对象
-    *
-    * @param collection 实体类集合
-    * @return
-    */
+     * 实体类转化成视图对象
+     *
+     * @param collection 实体类集合
+     * @return
+     */
     private List<TBlogVo> entity2Vo(Collection<TBlog> collection) {
         List<TBlogVo> voList = collection.stream()
                 .map(any -> BeanUtil.toBean(any, TBlogVo.class))
                 .collect(Collectors.toList());
         if (collection instanceof Page) {
-            Page<TBlog> page = (Page<TBlog>)collection;
+            Page<TBlog> page = (Page<TBlog>) collection;
             Page<TBlogVo> pageVo = new Page<>();
-            BeanUtil.copyProperties(page,pageVo);
+            BeanUtil.copyProperties(page, pageVo);
             pageVo.addAll(voList);
             voList = pageVo;
         }
@@ -108,9 +123,9 @@ public class TBlogServiceImpl extends ServiceImpl<TBlogMapper, TBlog> implements
 
     @Override
     public Boolean insertByAddBo(TBlogAddBo bo) {
-        if (bo.getTagId()!=null&& !bo.getTagId().equals("")){
+        if (bo.getTagId() != null && !bo.getTagId().equals("")) {
             String[] tagIds = bo.getTagId().split("'");
-            for (String id:tagIds) {
+            for (String id : tagIds) {
                 tagService.increaseTimes(Long.parseLong(id));
             }
         }
@@ -121,9 +136,9 @@ public class TBlogServiceImpl extends ServiceImpl<TBlogMapper, TBlog> implements
 
     @Override
     public TBlog insertByAddBoReturn(TBlogAddBo bo) {
-        if (StrUtil.isNotBlank(bo.getTagId())){
+        if (StrUtil.isNotBlank(bo.getTagId())) {
             String[] tagIds = bo.getTagId().split(",");
-            for (String id:tagIds) {
+            for (String id : tagIds) {
                 tagService.increaseTimes(Long.parseLong(id));
             }
         }
@@ -136,15 +151,15 @@ public class TBlogServiceImpl extends ServiceImpl<TBlogMapper, TBlog> implements
     @Override
     public Boolean updateByEditBo(TBlogEditBo bo) {
         TBlogVo tBlogVo = queryById(bo.getId());
-        if (tBlogVo.getTagId()!=null&& !tBlogVo.getTagId().equals("")){
+        if (tBlogVo.getTagId() != null && !tBlogVo.getTagId().equals("")) {
             String[] tagIds = tBlogVo.getTagId().split(",");
-            for (String id:tagIds) {
+            for (String id : tagIds) {
                 tagService.decreaseTimes(Long.parseLong(id));
             }
         }
-        if (bo.getTagId()!=null&& !bo.getTagId().equals("")){
+        if (bo.getTagId() != null && !bo.getTagId().equals("")) {
             String[] tagIds = bo.getTagId().split(",");
-            for (String id:tagIds) {
+            for (String id : tagIds) {
                 tagService.increaseTimes(Long.parseLong(id));
             }
         }
@@ -158,20 +173,46 @@ public class TBlogServiceImpl extends ServiceImpl<TBlogMapper, TBlog> implements
      *
      * @param entity 实体类数据
      */
-    private void validEntityBeforeSave(TBlog entity){
+    private void validEntityBeforeSave(TBlog entity) {
         //TODO 做一些数据校验,如唯一约束
+        List<String> urls = StringUtils.getUrls(entity.getContent());
+        if (urls.size() > 0) {
+            String secretId = configService.selectConfigByKey("cos.secret.id");
+            String secretKey = configService.selectConfigByKey("cos.secret.key");
+            String bucketName = configService.selectConfigByKey("cos.bucket");
+            COSClient cosClient = CosUtil.initCos(secretId, secretKey);
+            for (String url : urls) {
+                if (ArrayUtils.contains(MimeTypeUtils.IMAGE_EXTENSION, FileTypeUtils.getFileType(url))) {
+                    if (!url.contains(configService.selectConfigByKey("cos.bucket"))) {
+                        try {
+                            File file = ImageUtils.downloadImage(url);
+                            String fileName = file.getPath();
+                            String key = "/salishblog" + fileName;
+                            PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, key, file);
+                            cosClient.putObject(putObjectRequest);
+                            String cosUrl = Constants.COS_URL +key;
+                            entity.setContent(entity.getContent().replace(url,cosUrl));
+                        } catch (Exception e) {
+                            log.error(e.getMessage());
+                        }
+                    }
+                }
+            }
+
+//            cosClient.shutdown();
+        }
     }
 
     @Override
     public Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid) {
-        if(isValid){
+        if (isValid) {
             //TODO 做一些业务上的校验,判断是否需要校验
         }
-        ids.forEach(blogId->{
+        ids.forEach(blogId -> {
             TBlogVo tBlogVo = queryById(blogId);
-            if (tBlogVo.getTagId()!=null&& !tBlogVo.getTagId().equals("")){
+            if (tBlogVo.getTagId() != null && !tBlogVo.getTagId().equals("")) {
                 String[] tagIds = tBlogVo.getTagId().split("'");
-                for (String id:tagIds) {
+                for (String id : tagIds) {
                     tagService.decreaseTimes(Long.parseLong(id));
                 }
             }

@@ -34,14 +34,14 @@
     </div>
 
 
-<!--    <pagination
-      style="right: 20px"
-      v-show="total>0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
-      :limit.sync="queryParams.pageSize"
-      @pagination="getList"
-    />-->
+    <!--    <pagination
+          style="right: 20px"
+          v-show="total>0"
+          :total="total"
+          :page.sync="queryParams.pageNum"
+          :limit.sync="queryParams.pageSize"
+          @pagination="getList"
+        />-->
   </div>
 </template>
 
@@ -55,7 +55,7 @@ export default {
   components: {
     Editor,
   },
-  mixins:[infiniteScroll],
+  mixins: [infiniteScroll],
   data() {
     return {
       // 总条数
@@ -71,6 +71,7 @@ export default {
         title: undefined,
         tagId: undefined,
       },
+      isLoading: true
     };
   },
   created() {
@@ -96,19 +97,23 @@ export default {
         this.loading = false;
       });
     },
-    getLasgPage(){
-      this.queryParams.pageNum = this.queryParams.pageNum+1
-      interfileBlog(this.queryParams).then(response => {
-        let data = response.data.data;
-        if (this.blogObject[0][0].time == data[0][0].time){
-          this.blogObject[this.blogObject.length] = this.blogObject[this.blogObject.length].concat(data[0])
-          data.slice(0,1);
-          this.blogObject = this.blogObject.concat(data)
-        }else {
-          this.blogObject = this.blogObject.concat(data)
-        }
-        this.total = response.data.total;
-      });
+    getLastPage() {
+      if (this.isLoading) {
+        this.isLoading = false
+        this.queryParams.pageNum = this.queryParams.pageNum + 1
+        interfileBlog(this.queryParams).then(response => {
+          let data = response.data.data;
+          if (this.blogObject[0][0].time == data[0][0].time) {
+            this.blogObject[this.blogObject.length] = this.blogObject[this.blogObject.length].concat(data[0])
+            data.slice(0, 1);
+            this.blogObject = this.blogObject.concat(data)
+          } else {
+            this.blogObject = this.blogObject.concat(data)
+          }
+          this.total = response.data.total;
+          this.isLoading = true;
+        });
+      }
     },
     openBlog(id) {
       this.$router.push({path: "/salish/blogContent", query: {blogId: id}})
@@ -117,7 +122,7 @@ export default {
 };
 </script>
 <style>
-.interfile .el-divider__text{
+.interfile .el-divider__text {
   background-color: #f1f1f1;
 }
 </style>

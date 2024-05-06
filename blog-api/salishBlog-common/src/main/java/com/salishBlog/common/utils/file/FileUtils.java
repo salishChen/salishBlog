@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
-import com.salishBlog.common.config.RuoYiConfig;
+import com.salishBlog.common.config.SalishConfig;
 import com.salishBlog.common.utils.DateUtils;
 import com.salishBlog.common.utils.StringUtils;
 import com.salishBlog.common.utils.uuid.IdUtils;
@@ -73,7 +73,7 @@ public class FileUtils extends org.apache.commons.io.FileUtils
      */
     public static String writeImportBytes(byte[] data) throws IOException
     {
-        return writeBytes(data, RuoYiConfig.getImportPath());
+        return writeBytes(data, SalishConfig.getImportPath());
     }
 
     /**
@@ -288,6 +288,13 @@ public class FileUtils extends org.apache.commons.io.FileUtils
         }
         String baseName = FilenameUtils.getBaseName(fileName);
         return baseName;
+    }
+
+    public static void creatParentFile(String filename){
+        File file = new File(filename);
+        if (!file.getParentFile().exists()){
+            file.getParentFile().mkdirs();
+        }
     }
 
 }

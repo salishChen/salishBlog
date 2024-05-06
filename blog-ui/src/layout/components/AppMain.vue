@@ -5,12 +5,17 @@
         <router-view :key="key" />
       </keep-alive>
     </transition>
+    <Beian></Beian>
   </section>
 </template>
 
 <script>
+import Beian from "@/layout/components/plugins/Beian";
 export default {
   name: 'AppMain',
+  components:{
+    Beian
+  },
   computed: {
     cachedViews() {
       return this.$store.state.tagsView.cachedViews

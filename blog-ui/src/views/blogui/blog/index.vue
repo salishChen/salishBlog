@@ -61,6 +61,7 @@ export default {
         title: undefined,
         tagId: undefined,
       },
+      isLoading:true
     };
   },
   created() {
@@ -83,12 +84,17 @@ export default {
         this.loading = false;
       });
     },
-    getLasgPage() {
-      this.queryParams.pageNum = this.queryParams.pageNum + 1
-      listBlogInfo(this.queryParams).then(response => {
-        this.blogList = this.blogList.concat(response.rows)
-        this.total = response.total;
-      });
+    getLastPage() {
+      if (this.isLoading){
+        this.isLoading = false
+        this.queryParams.pageNum = this.queryParams.pageNum + 1
+        listBlogInfo(this.queryParams).then(response => {
+          this.blogList = this.blogList.concat(response.rows)
+          this.total = response.total;
+          this.isLoading = true;
+        });
+      }
+
     },
     openBlog(id) {
       this.$router.push({path: "/salish/blogContent", query: {blogId: id}})

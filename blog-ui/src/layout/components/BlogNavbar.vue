@@ -10,7 +10,7 @@
         text-color="#3c3f41"
         :router="true"
         active-text-color="#2b2b2b">
-        <el-menu-item index="/salish/blog" >博客</el-menu-item>
+        <el-menu-item index="/salish/blog" >记事</el-menu-item>
         <el-menu-item index="/salish/category/0">分类</el-menu-item>
         <el-menu-item index="/salish/interfile">归档</el-menu-item>
         <el-menu-item index="/salish/fillPit" >填坑

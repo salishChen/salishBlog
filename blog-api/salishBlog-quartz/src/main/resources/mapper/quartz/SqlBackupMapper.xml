@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.salishBlog.quartz.mapper.SqlBackupMapper">
+
+    <resultMap type="com.salishBlog.quartz.domain.SqlBackup" id="SqlBackupResult">
+        <result property="id" column="id"/>
+        <result property="sqlIp" column="sql_ip"/>
+        <result property="sqlName" column="sql_name"/>
+        <result property="dbName" column="db_name"/>
+        <result property="sqlUsername" column="sql_username"/>
+        <result property="sqlPassword" column="sql_password"/>
+        <result property="sqlCron" column="sql_cron"/>
+        <result property="fileLimit" column="file_limit"/>
+        <result property="type" column="type"/>
+    </resultMap>
+
+
+</mapper>

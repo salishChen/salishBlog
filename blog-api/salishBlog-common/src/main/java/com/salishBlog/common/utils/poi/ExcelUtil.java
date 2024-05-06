@@ -68,7 +68,7 @@ import com.salishBlog.common.annotation.Excel;
 import com.salishBlog.common.annotation.Excel.ColumnType;
 import com.salishBlog.common.annotation.Excel.Type;
 import com.salishBlog.common.annotation.Excels;
-import com.salishBlog.common.config.RuoYiConfig;
+import com.salishBlog.common.config.SalishConfig;
 import com.salishBlog.common.core.domain.AjaxResult;
 import com.salishBlog.common.core.text.Convert;
 import com.salishBlog.common.exception.UtilException;
@@ -1121,7 +1121,7 @@ public class ExcelUtil<T>
      */
     public String getAbsoluteFile(String filename)
     {
-        String downloadPath = RuoYiConfig.getDownloadPath() + filename;
+        String downloadPath = SalishConfig.getDownloadPath() + filename;
         File desc = new File(downloadPath);
         if (!desc.getParentFile().exists())
         {
