@@ -65,6 +65,7 @@ export default {
     };
   },
   created() {
+    this.pageConfig()
     listTag().then(response => {
       let tagsOptions = []
       tagsOptions = response.rows;
@@ -75,6 +76,19 @@ export default {
     });
   },
   methods: {
+    async pageConfig(){
+      let settings = JSON.parse(sessionStorage.getItem('layout-setting'));
+      if (settings.defaultPage!=1){
+        settings.defaultPage=1;
+        console.log(111)
+        sessionStorage.setItem('layout-setting', JSON.stringify(settings));
+        await this.$store.dispatch('settings/changeSetting', {
+          key: 'defaultPage',
+          value: 1
+        })
+      }
+
+    },
     /** 查询博客列表 */
     getList() {
       this.loading = true;

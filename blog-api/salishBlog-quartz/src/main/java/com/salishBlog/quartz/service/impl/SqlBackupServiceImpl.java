@@ -49,10 +49,8 @@ public class SqlBackupServiceImpl extends ServiceImpl<SqlBackupMapper, SqlBackup
         this.scheduler = scheduler;
     }
 
-//    @PostConstruct
     public void init() throws SchedulerException, TaskException
     {
-//        scheduler.clear();
         List<SqlBackup> jobList = this.baseMapper.selectList(new QueryWrapper<>());
         for (SqlBackup job : jobList)
         {

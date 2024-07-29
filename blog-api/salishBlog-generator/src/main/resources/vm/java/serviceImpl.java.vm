@@ -7,12 +7,12 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.pagehelper.Page;
-import ${packageName}.entity.bo.${ClassName}AddBo;
-import ${packageName}.entity.bo.${ClassName}QueryBo;
-import ${packageName}.entity.bo.${ClassName}EditBo;
-import ${packageName}.entity.${ClassName};
+import ${packageName}.domain.bo.${ClassName}AddBo;
+import ${packageName}.domain.bo.${ClassName}QueryBo;
+import ${packageName}.domain.bo.${ClassName}EditBo;
+import ${packageName}.domain.${ClassName};
 import ${packageName}.mapper.${ClassName}Mapper;
-import ${packageName}.entity.vo.${ClassName}Vo;
+import ${packageName}.domain.vo.${ClassName}Vo;
 import ${packageName}.service.I${ClassName}Service;
 
 import java.util.Collection;

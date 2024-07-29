@@ -103,11 +103,14 @@ export default {
         this.queryParams.pageNum = this.queryParams.pageNum + 1
         interfileBlog(this.queryParams).then(response => {
           let data = response.data.data;
-          if (this.blogObject[0][0].time == data[0][0].time) {
-            this.blogObject[this.blogObject.length] = this.blogObject[this.blogObject.length].concat(data[0])
-            data.slice(0, 1);
+          console.log(this.blogObject)
+          console.log(data[0][0].time)
+          if (this.blogObject[this.blogObject.length-1][0].time == data[0][0].time) {
+            this.blogObject[this.blogObject.length-1] = this.blogObject[this.blogObject.length-1].concat(data[0])
+            data = data.slice(1, data.length-1);
             this.blogObject = this.blogObject.concat(data)
           } else {
+
             this.blogObject = this.blogObject.concat(data)
           }
           this.total = response.data.total;

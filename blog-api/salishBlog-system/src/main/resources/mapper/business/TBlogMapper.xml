@@ -59,4 +59,14 @@
         order by create_time desc
     </select>
 
+    <select id="dayStatistic" resultMap="TBlogResult" parameterType="com.salishBlog.business.domain.bo.TBlogQueryBo">
+        SELECT LEFT(create_time, 10) AS time,count(*) AS content
+        FROM t_blog
+        <where>
+            <if test="firstDay != null">and create_time &gt;= #{firstDay}</if>
+            <if test="lastDay != null">and create_time &lt;= #{lastDay}</if>
+        </where>
+        GROUP BY LEFT(create_time, 10)
+    </select>
+
 </mapper>

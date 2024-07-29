@@ -35,7 +35,7 @@ export default {
       const clientHeight = this.getClientHeight();
       const scrollHeight = this.getScrollHeight();
       //如果满足公式则，确实到底了
-      if (scrollTop + clientHeight >= scrollHeight - 80) {
+      if (scrollTop + clientHeight >= scrollHeight - 280) {
         //发送异步请求请求数据，同时携带offset并自增offset
         //noMore是自定义变量，如果是最后一批数据则以后都不加载
         if (this.total > this.queryParams.pageSize * this.queryParams.pageNum) {

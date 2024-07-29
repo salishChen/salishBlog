@@ -4,14 +4,9 @@
       <el-collapse v-model="tagShow" accordion @change="changeTag">
         <el-collapse-item v-for="tag in pitTags" :title="tag" :name="tag">
           <div class="pit-container" v-if="pitList[tag]!=undefined&&pitList[tag].length>0">
-            <el-table
-              :data="pitList[tag]"
-              style="width: 100%"
-              header-row-style="display:none">
-              <el-table-column
-                prop="content">
-              </el-table-column>
-            </el-table>
+            <div :style="{borderBottom:pitList[tag].length-1===index?'':'1px #e6e6e6 solid'}" v-for="(item,index) in pitList[tag]">
+              <div class="pit-content" v-html="item.content"></div>
+            </div>
           </div>
         </el-collapse-item>
       </el-collapse>
@@ -103,5 +98,10 @@ export default {
   padding: 10px;
   min-height: 60px;
 }
-
+.pit_block{
+  border-bottom: 1px #e6e6e6 solid;
+}
+.pit-content{
+  padding:0 10px;
+}
 </style>
