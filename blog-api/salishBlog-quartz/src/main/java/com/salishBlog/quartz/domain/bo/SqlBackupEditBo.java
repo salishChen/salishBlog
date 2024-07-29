@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 
@@ -21,7 +22,7 @@ public class SqlBackupEditBo {
 
     /** id */
     @ApiModelProperty("id")
-    @NotEmpty(message = "id不能为空")
+    @NotNull(message = "id不能为空")
     private Long id;
 
     /** 名称 */

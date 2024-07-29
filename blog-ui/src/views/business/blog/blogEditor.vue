@@ -61,7 +61,7 @@
         </el-col>
         <el-col :span="22">
           <el-form-item label="博文内容" prop="content">
-            <Markdown v-if="form.contentType==1" :content.sync="form.content" :save="save" min-height="400px"></Markdown>
+            <Markdown v-if="form.contentType==1" :content.sync="form.content" :save="save" height="800px"></Markdown>
 <!--            <v-md-editor v-if="form.contentType==1"   @upload-image="handleUploadImage" ></v-md-editor>-->
             <Editor v-if="form.contentType==2||(form.contentType==''||form.contentType==undefined)"
                     v-model="form.content" :classs="'avatar-uploader'" :minHeight="150"/>

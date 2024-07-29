@@ -1,10 +1,10 @@
 package ${packageName}.service;
 
-import ${packageName}.entity.${ClassName};
-import ${packageName}.entity.vo.${ClassName}Vo;
-import ${packageName}.entity.bo.${ClassName}QueryBo;
-import ${packageName}.entity.bo.${ClassName}AddBo;
-import ${packageName}.entity.bo.${ClassName}EditBo;
+import ${packageName}.domain.${ClassName};
+import ${packageName}.domain.vo.${ClassName}Vo;
+import ${packageName}.domain.bo.${ClassName}QueryBo;
+import ${packageName}.domain.bo.${ClassName}AddBo;
+import ${packageName}.domain.bo.${ClassName}EditBo;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.Collection;

@@ -3,7 +3,9 @@ package com.salishBlog.web.controller.business;
 import java.util.List;
 import java.util.Arrays;
 
+import com.alibaba.fastjson2.JSONObject;
 import com.salishBlog.business.domain.TBlog;
+import com.salishBlog.business.service.ITBlogService;
 import com.salishBlog.common.core.domain.entity.SysUser;
 import com.salishBlog.common.core.domain.model.LoginUser;
 import com.salishBlog.common.utils.DateUtils;
@@ -46,9 +48,10 @@ import io.swagger.annotations.ApiOperation;
 @RequestMapping("/tBlog/blog")
 public class TBlogController extends BaseController {
 
-    private final ITBlogService iTBlogService;
+    private final ITBlogService blogService;
     @Autowired
     private TokenService tokenService;
+
     /**
      * 查询博客列表
      */
@@ -57,7 +60,7 @@ public class TBlogController extends BaseController {
     @GetMapping("/list")
     public TableDataInfo<TBlog> list(TBlog bo) {
         startPage();
-        List<TBlog> list = iTBlogService.selectBlogByTag(bo);
+        List<TBlog> list = blogService.selectBlogByTag(bo);
         return getDataTable(list);
     }
 
@@ -69,7 +72,7 @@ public class TBlogController extends BaseController {
     @GetMapping("/listInfo")
     public TableDataInfo<TBlog> listInfo(TBlog bo) {
         startPage();
-        List<TBlog> list = iTBlogService.selectBlogByTag(bo);
+        List<TBlog> list = blogService.selectBlogByTag(bo);
         return getDataTable(list);
     }
 
@@ -81,9 +84,9 @@ public class TBlogController extends BaseController {
     @Log(title = "博客", businessType = BusinessType.EXPORT)
     @GetMapping("/export")
     public AjaxResult<TBlogVo> export(TBlogQueryBo bo) {
-        List<TBlogVo> list = iTBlogService.queryList(bo);
+        List<TBlogVo> list = blogService.queryList(bo);
         ExcelUtil<TBlogVo> util = new ExcelUtil<TBlogVo>(TBlogVo.class);
-        return util.exportExcel(list, "blog" );
+        return util.exportExcel(list, "blog");
     }
 
     /**
@@ -92,8 +95,8 @@ public class TBlogController extends BaseController {
     @ApiOperation("获取博客详细信息")
     @PreAuthorize("@ss.hasPermi('tBlog:blog:query')")
     @GetMapping("/{id}")
-    public AjaxResult<TBlogVo> getInfo(@PathVariable("id" ) Long id) {
-        return AjaxResult.success(iTBlogService.queryById(id));
+    public AjaxResult<TBlogVo> getInfo(@PathVariable("id") Long id) {
+        return AjaxResult.success(blogService.queryById(id));
     }
 
     /**
@@ -108,7 +111,7 @@ public class TBlogController extends BaseController {
         SysUser user = loginUser.getUser();
         bo.setCreateBy(user.getNickName());
         bo.setCreateTime(DateUtils.getNowDate());
-        return AjaxResult.success(iTBlogService.insertByAddBoReturn(bo));
+        return AjaxResult.success(blogService.insertByAddBoReturn(bo));
     }
 
     /**
@@ -123,7 +126,7 @@ public class TBlogController extends BaseController {
         SysUser user = loginUser.getUser();
         bo.setUpdateBy(user.getNickName());
         bo.setUpdateTime(DateUtils.getNowDate());
-        return toAjax(iTBlogService.updateByEditBo(bo) ? 1 : 0);
+        return toAjax(blogService.updateByEditBo(bo) ? 1 : 0);
     }
 
     /**
@@ -131,9 +134,20 @@ public class TBlogController extends BaseController {
      */
     @ApiOperation("删除博客")
     @PreAuthorize("@ss.hasPermi('tBlog:blog:remove')")
-    @Log(title = "博客" , businessType = BusinessType.DELETE)
+    @Log(title = "博客", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
     public AjaxResult<Void> remove(@PathVariable Long[] ids) {
-        return toAjax(iTBlogService.deleteWithValidByIds(Arrays.asList(ids), true) ? 1 : 0);
+        return toAjax(blogService.deleteWithValidByIds(Arrays.asList(ids), true) ? 1 : 0);
+    }
+
+
+    /**
+     * 统计博客
+     */
+    @ApiOperation("统计博客")
+    @PreAuthorize("@ss.hasPermi('tBlog:blog:list')")
+    @GetMapping("/blogStatistic")
+    public JSONObject blogStatistic() {
+        return blogService.blogStatistic();
     }
 }

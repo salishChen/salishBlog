@@ -59,11 +59,11 @@ public class SqlBackupUtil {
             StringBuffer sb = new StringBuffer();
             if (inDocker) {
                 sb.append("docker exec mysql sh -c ");
-                sb.append("'mysqldump");
+                sb.append("\'mysqldump");
                 sb.append(" -h" + ip);
                 sb.append(" " + dbName);
                 sb.append(" -u" + uname);
-                sb.append(" -p" +pwd +" 2>/dev/null'");
+                sb.append(" -p" + pwd + " 2>/dev/null\'");
                 sb.append(" -r ");//java中必须使用"-r"替代">"
                 sb.append(pathSql);
             } else {
@@ -83,7 +83,12 @@ public class SqlBackupUtil {
             if (osName.equals("Linux")) {
                 BufferedReader bufferedReader = null;
                 PrintWriter printWriter = new PrintWriter(new OutputStreamWriter(new FileOutputStream(fileSql), "utf8"));
-                process = Runtime.getRuntime().exec(sb.toString());
+
+                if (inDocker) {
+                    process = new ProcessBuilder("/bin/sh", "-c", sb.toString()).start();
+                } else {
+                    process = Runtime.getRuntime().exec(sb.toString());
+                }
                 InputStreamReader inputStreamReader = new InputStreamReader(process.getInputStream(), "utf8");
                 bufferedReader = new BufferedReader(inputStreamReader);
                 String line;

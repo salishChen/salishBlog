@@ -51,3 +51,11 @@ export function exportBlog(query) {
     params: query
   })
 }
+
+// 导出博客
+export function blogStatistic() {
+  return request({
+    url: '/tBlog/blog/blogStatistic',
+    method: 'get'
+  })
+}

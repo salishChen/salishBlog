@@ -1,23 +1,45 @@
 <template>
   <div class="app-container home">
+    <panel-group/>
+
+    <el-row style="background:#fff;padding:16px 16px 0;margin-bottom:32px;">
+      <heat-map-chart ref="heatMapChart" :chart-data="chartData"/>
+    </el-row>
 
   </div>
 </template>
 
 <script>
+import PanelGroup from './dashboard/PanelGroup'
+import HeatMapChart from './dashboard/HeatMapChart'
+import {blogStatistic} from "@/api/business/blog";
+
 export default {
   name: "Index",
+  components: {
+    PanelGroup,
+    HeatMapChart
+  },
   data() {
     return {
-      // 版本号
-      version: "3.8.3",
-    };
+      chartData: []
+    }
+  },
+  created() {
+    this.statistic();
   },
   methods: {
-   /* goTarget(href) {
-      window.open(href, "_blank");
-    },*/
-  },
+    statistic(){
+      let that = this;
+      blogStatistic().then(res=>{
+        // console.log(res.dayCount)
+        that.chartData = res.dayCount;
+        that.$nextTick(()=>{
+          that.$refs.heatMapChart.initChart();
+        });
+      })
+    }
+  }
 };
 </script>
 

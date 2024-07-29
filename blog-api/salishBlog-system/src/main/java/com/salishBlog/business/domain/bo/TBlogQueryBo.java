@@ -56,5 +56,7 @@ public class TBlogQueryBo extends BaseEntity {
 	/** 是否删除 */
 	@ApiModelProperty("是否删除")
 	private Long isDelete;
+	private String firstDay;
+	private String lastDay;
 
 }

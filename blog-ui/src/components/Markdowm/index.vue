@@ -1,7 +1,7 @@
 <template>
   <v-md-editor v-model="blogContent" @change="changeContent" @save="mdSave()" :disabled-menus="[]"
                @upload-image="handleUploadImage"
-               :style="{minHeight:minHeight}"></v-md-editor>
+               :style="{height:height}"></v-md-editor>
 </template>
 
 <script>

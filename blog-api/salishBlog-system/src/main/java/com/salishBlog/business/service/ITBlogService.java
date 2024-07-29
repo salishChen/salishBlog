@@ -21,47 +21,56 @@ import java.util.Map;
  * @date 2022-07-21
  */
 public interface ITBlogService extends IService<TBlog> {
-	/**
-	 * 查询单个
-	 * @return
-	 */
-	TBlogVo queryById(Long id);
+    /**
+     * 查询单个
+     *
+     * @return
+     */
+    TBlogVo queryById(Long id);
 
-	/**
-	 * 查询列表
-	 */
-	List<TBlogVo> queryList(TBlogQueryBo bo);
+    /**
+     * 查询列表
+     */
+    List<TBlogVo> queryList(TBlogQueryBo bo);
 
-	/**
-	 * 仅查询博客信息
-	 */
-	List<TBlog> queryInfo(TBlog tBlog) ;
+    /**
+     * 仅查询博客信息
+     */
+    List<TBlog> queryInfo(TBlog tBlog);
 
-	List <TBlog> selectBlogByTag(TBlog tBlog);
+    List<TBlog> selectBlogByTag(TBlog tBlog);
 
-	/**归档*/
-	AjaxResult interfile(TBlog tBlog);
-	/**
-	 * 根据新增业务对象插入博客
-	 * @param bo 博客新增业务对象
-	 * @return
-	 */
-	Boolean insertByAddBo(TBlogAddBo bo);
+    JSONObject blogStatistic();
 
-	TBlog insertByAddBoReturn(TBlogAddBo bo);
+    /**
+     * 归档
+     */
+    AjaxResult interfile(TBlog tBlog);
 
-	/**
-	 * 根据编辑业务对象修改博客
-	 * @param bo 博客编辑业务对象
-	 * @return
-	 */
-	Boolean updateByEditBo(TBlogEditBo bo);
+    /**
+     * 根据新增业务对象插入博客
+     *
+     * @param bo 博客新增业务对象
+     * @return
+     */
+    Boolean insertByAddBo(TBlogAddBo bo);
 
-	/**
-	 * 校验并删除数据
-	 * @param ids 主键集合
-	 * @param isValid 是否校验,true-删除前校验,false-不校验
-	 * @return
-	 */
-	Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
+    TBlog insertByAddBoReturn(TBlogAddBo bo);
+
+    /**
+     * 根据编辑业务对象修改博客
+     *
+     * @param bo 博客编辑业务对象
+     * @return
+     */
+    Boolean updateByEditBo(TBlogEditBo bo);
+
+    /**
+     * 校验并删除数据
+     *
+     * @param ids     主键集合
+     * @param isValid 是否校验,true-删除前校验,false-不校验
+     * @return
+     */
+    Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
 }
