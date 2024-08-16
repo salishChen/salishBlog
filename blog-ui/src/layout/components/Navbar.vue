@@ -10,7 +10,7 @@
         <search id="header-search" class="right-menu-item" />
         <el-tooltip content="博客页" class="right-menu-item hover-effect" @click.native="toExhibit">
           <div style="padding-top: 2px;">
-            <svg-icon icon-class="druid" style="font-size: 25px"></svg-icon>
+            <svg-icon icon-class="home" style="font-size: 25px"></svg-icon>
           </div>
         </el-tooltip>
         <screenfull id="screenfull" class="right-menu-item hover-effect" />

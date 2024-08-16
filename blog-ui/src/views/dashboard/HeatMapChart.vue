@@ -76,6 +76,13 @@ export default {
           splitLine: {
             show: false
           },
+          dayLabel: {
+            firstDay: 1, // 从周一开始
+            nameMap:'cn'
+          },
+          monthLabel:{
+            nameMap:'cn'
+          },
           yearLabel: {show: false}
         },
         series: {

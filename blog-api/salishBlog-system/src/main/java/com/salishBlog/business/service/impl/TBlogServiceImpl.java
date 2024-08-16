@@ -112,8 +112,8 @@ public class TBlogServiceImpl extends ServiceImpl<TBlogMapper, TBlog> implements
         json.put("monthTotal", this.baseMapper.selectCount(lqw));
         json.put("total", this.count());
         TBlogQueryBo tBlogQueryBo = new TBlogQueryBo();
-        tBlogQueryBo.setFirstDay(yearFirst);
-        tBlogQueryBo.setLastDay(yearLast);
+        tBlogQueryBo.setFirstDay(yearFirst + " 00:00:00");
+        tBlogQueryBo.setLastDay(yearLast + " 23:59:59");
         List<TBlog> tBlogs = this.baseMapper.dayStatistic(tBlogQueryBo);
         Map<String, String> collect = tBlogs.stream().collect(Collectors.toMap(TBlog::getTime, TBlog::getContent));
         JSONArray array = new JSONArray();
