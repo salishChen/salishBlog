@@ -13,9 +13,8 @@
         <el-menu-item index="/salish/blog" >记事</el-menu-item>
         <el-menu-item index="/salish/category/0">分类</el-menu-item>
         <el-menu-item index="/salish/interfile">归档</el-menu-item>
-        <el-menu-item index="/salish/fillPit" >填坑
-        </el-menu-item>
-        <el-menu-item index="9">关于我</el-menu-item>
+        <el-menu-item index="/salish/fillPit" >填坑</el-menu-item>
+<!--        <el-menu-item index="9">关于我</el-menu-item>-->
       </el-menu>
     </div>
 
@@ -24,7 +23,7 @@
         <screenfull id="screenfull" class="right-menu-item hover-effect"/>
         <el-tooltip content="工作台" class="right-menu-item hover-effect" @click.native="toWorkspace">
           <div style="padding-top: 2px;">
-            <svg-icon icon-class="druid" style="font-size: 25px"></svg-icon>
+            <svg-icon icon-class="ctrl" style="font-size: 25px"></svg-icon>
           </div>
         </el-tooltip>
       </template>
