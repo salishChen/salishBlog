@@ -1,6 +1,8 @@
 package com.salishBlog.generator.domain;
 
 import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.salishBlog.common.core.domain.BaseEntity;
 
 import javax.validation.constraints.NotBlank;
@@ -15,6 +17,7 @@ public class GenTableColumn extends BaseEntity
     private static final long serialVersionUID = 1L;
 
     /** 编号 */
+    @TableId(value = "column_id",type = IdType.AUTO)
     private Long columnId;
 
     /** 归属表编号 */

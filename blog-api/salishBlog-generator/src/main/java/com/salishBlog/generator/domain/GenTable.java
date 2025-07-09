@@ -1,6 +1,8 @@
 package com.salishBlog.generator.domain;
 
 import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.salishBlog.common.constant.GenConstants;
 import com.salishBlog.common.core.domain.BaseEntity;
 import org.apache.commons.lang3.ArrayUtils;
@@ -19,6 +21,7 @@ public class GenTable extends BaseEntity
     private static final long serialVersionUID = 1L;
 
     /** 编号 */
+    @TableId(value = "table_id",type = IdType.AUTO)
     private Long tableId;
 
     /** 表名称 */
