@@ -8,7 +8,7 @@ spring:
             master:
                 url: jdbc:mysql://192.168.3.222:3306/blog?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
                 username: root
-                password: --------
+                password: salishchen729@
             # 从库数据源
             slave:
                 # 从数据源开关/默认关闭
@@ -50,7 +50,7 @@ spring:
                     enabled: true
                     # 慢SQL记录
                     log-slow-sql: true
-                    slow-sql-millis: 1000
+                    slow-sql-millis: 5000
                     merge-sql: true
                 wall:
                     config:
@@ -78,3 +78,7 @@ spring:
                 max-active: 8
                 # #连接池最大阻塞等待时间（使用负值表示没有限制）
                 max-wait: -1ms
+            cluster:
+                refresh:
+                    adaptive: true
+                    period: 20

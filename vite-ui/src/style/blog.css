@@ -1,0 +1,51 @@
+.blog-container {
+  border-radius: 2px;
+  background-color: #FFFFFF;
+  margin: 10px;
+  padding: 10px;
+  min-height: 160px;
+}
+
+.blog-title {
+  margin-top: 5px;
+  margin-left: 10px;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.blog-cover {
+  height: 90px;
+  width: 120px;
+}
+
+.blog-summary {
+  margin: 5px;
+  height: 60px;
+  font-size: 13px;
+  font-weight: 200;
+  color: #666;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.blog-time {
+  margin: 5px;
+  min-height: 10px;
+  font-size: 13px;
+  font-weight: 200;
+  color: #666;
+}
+
+.pagination-container {
+  background-color: transparent !important;
+}
+.left-block{
+  display: inline-flex;
+  position: relative;
+  float: left;
+}
+.right-block{
+  display: inline-block;
+  position: relative;
+  float: right;
+}

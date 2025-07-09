@@ -20,6 +20,9 @@
 <script>
 import {getBlog, listTag, getDictData} from "@/api/business/salish";
 import Editor from '@/components/Editor';
+import BlogTag from "@/components/BlogTag";
+
+
 
 export default {
   name: "Blog",

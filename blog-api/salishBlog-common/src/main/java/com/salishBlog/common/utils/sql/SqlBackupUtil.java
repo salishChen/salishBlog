@@ -2,13 +2,11 @@ package com.salishBlog.common.utils.sql;
 
 
 import com.salishBlog.common.config.SalishConfig;
-import com.salishBlog.common.utils.file.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -16,6 +14,42 @@ import java.util.Date;
 public class SqlBackupUtil {
 
     private static final Logger log = LoggerFactory.getLogger(SqlBackupUtil.class);
+
+    // 多维度检测逻辑
+    public static boolean isInContainer() {
+        return checkCgroup() || checkDockerenv() || checkEnvVariables();
+    }
+
+    // 检测 cgroup 特征
+    private static boolean checkCgroup() {
+        final String[] CONTAINER_INDICATORS = {
+                "docker", "kubepods", "containerd", "lxc", "crio", "ecs", "k8s"
+        };
+
+        try (BufferedReader reader = Files.newBufferedReader(Paths.get("/proc/self/cgroup"))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                for (String indicator : CONTAINER_INDICATORS) {
+                    if (line.contains(indicator)) return true;
+                }
+            }
+        } catch (IOException e) {
+            log.error("Cgroup check failed", e);
+        }
+        return false;
+    }
+
+    // 检测 .dockerenv 文件
+    private static boolean checkDockerenv() {
+        return Files.exists(Paths.get("/.dockerenv"));
+    }
+
+    // 检测容器环境变量
+    private static boolean checkEnvVariables() {
+        return System.getenv("KUBERNETES_SERVICE_HOST") != null ||
+                System.getenv("ECS_CONTAINER_METADATA_URI") != null ||
+                System.getenv("CONTAINER") != null;
+    }
 
     /**
      * 备份数据库db
@@ -33,12 +67,8 @@ public class SqlBackupUtil {
             String osName = System.getProperties().getProperty("os.name");
             if (osName.equals("Linux")) {
                 pathSql = SalishConfig.getBackupPath() + "/" + dbName + "/" + backName;
-                Path path = Paths.get("/proc/1/cgroup");
-                if (Files.exists(path)) {
-                    String content = new String(Files.readAllBytes(path));
-                    inDocker = content.contains("docker");
-                }
-
+                inDocker = isInContainer();
+                System.out.println("inDocker:" + inDocker);
             } else {
                 pathSql = SalishConfig.getWinProfile() + "\\" + dbName + "\\" + backName;
 
