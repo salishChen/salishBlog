@@ -1,6 +1,6 @@
 <template>
    <div class="app-container">
-      <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch">
+      <el-form class="app-search card" :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch">
          <el-form-item label="部门名称" prop="deptName">
             <el-input
                v-model="queryParams.deptName"
@@ -25,56 +25,66 @@
             <el-button icon="Refresh" @click="resetQuery">重置</el-button>
          </el-form-item>
       </el-form>
-
-      <el-row :gutter="10" class="mb8">
+     <div class="app-content card">
+       <el-row :gutter="10" class="mb8">
          <el-col :span="1.5">
-            <el-button
+           <el-button
                type="primary"
                plain
                icon="Plus"
                @click="handleAdd"
                v-hasPermi="['system:dept:add']"
-            >新增</el-button>
+           >新增
+           </el-button>
          </el-col>
          <el-col :span="1.5">
-            <el-button
+           <el-button
                type="info"
                plain
                icon="Sort"
                @click="toggleExpandAll"
-            >展开/折叠</el-button>
+           >展开/折叠
+           </el-button>
          </el-col>
          <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
-      </el-row>
+       </el-row>
 
-      <el-table
-         v-if="refreshTable"
-         v-loading="loading"
-         :data="deptList"
-         row-key="deptId"
-         :default-expand-all="isExpandAll"
-         :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
-      >
+       <el-table
+           v-if="refreshTable"
+           v-loading="loading"
+           :data="deptList"
+           row-key="deptId"
+           :default-expand-all="isExpandAll"
+           :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
+       >
          <el-table-column prop="deptName" label="部门名称" width="260"></el-table-column>
          <el-table-column prop="orderNum" label="排序" width="200"></el-table-column>
          <el-table-column prop="status" label="状态" width="100">
-            <template #default="scope">
-               <dict-tag :options="sys_normal_disable" :value="scope.row.status" />
-            </template>
+           <template #default="scope">
+             <dict-tag :options="sys_normal_disable" :value="scope.row.status"/>
+           </template>
          </el-table-column>
          <el-table-column label="创建时间" align="center" prop="createTime" width="200">
-            <template #default="scope">
-               <span>{{ parseTime(scope.row.createTime) }}</span>
-            </template>
+           <template #default="scope">
+             <span>{{ parseTime(scope.row.createTime) }}</span>
+           </template>
          </el-table-column>
          <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
-            <template #default="scope">
-               <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['system:dept:edit']">修改</el-button>
-               <el-button link type="primary" icon="Plus" @click="handleAdd(scope.row)" v-hasPermi="['system:dept:add']">新增</el-button>
-               <el-button v-if="scope.row.parentId != 0" link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['system:dept:remove']">删除</el-button>
-            </template>
+           <template #default="scope">
+             <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)"
+                        v-hasPermi="['system:dept:edit']">修改
+             </el-button>
+             <el-button link type="primary" icon="Plus" @click="handleAdd(scope.row)" v-hasPermi="['system:dept:add']">
+               新增
+             </el-button>
+             <el-button v-if="scope.row.parentId != 0" link type="primary" icon="Delete"
+                        @click="handleDelete(scope.row)" v-hasPermi="['system:dept:remove']">删除
+             </el-button>
+           </template>
          </el-table-column>
-      </el-table>
+       </el-table>
+     </div>
+
 
       <!-- 添加或修改部门对话框 -->
       <el-dialog :title="title" v-model="open" width="600px" append-to-body>

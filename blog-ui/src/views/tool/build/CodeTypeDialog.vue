@@ -14,7 +14,7 @@
           ref="elForm"
           :model="formData"
           :rules="rules"
-          size="medium"
+          size="default"
           label-width="100px"
         >
           <el-col :span="24">

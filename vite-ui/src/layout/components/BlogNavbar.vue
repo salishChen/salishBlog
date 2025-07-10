@@ -36,7 +36,9 @@ import useAppStore from '@/store/modules/app'
 import useUserStore from '@/store/modules/user'
 import useSettingsStore from '@/store/modules/settings'
 import router from "@/router";
+import useTagsViewStore from "@/store/modules/tagsView.js";
 
+const route = useRoute()
 const appStore = useAppStore()
 const userStore = useUserStore()
 const settingsStore = useSettingsStore()
@@ -48,6 +50,7 @@ function toggleSideBar() {
 }
 
 async function toWorkspace() {
+  useTagsViewStore().delView(route)
   await router.replace({path: "/index"})
   let settings = JSON.parse(localStorage.getItem('layout-setting'));
   settings.defaultPage = 2;

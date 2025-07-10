@@ -58,8 +58,10 @@ import useSettingsStore from '@/store/modules/settings'
 import {onMounted} from "vue";
 
 import router from "@/router/index.js";
+import useTagsViewStore from "@/store/modules/tagsView.js";
 const { proxy } = getCurrentInstance();
 
+const route = useRoute()
 const appStore = useAppStore()
 const userStore = useUserStore()
 const settingsStore = useSettingsStore()
@@ -107,6 +109,7 @@ function setLayout() {
 }
 
 async function toExhibit() {
+  useTagsViewStore().delView(route)
   await router.replace({path: "/salish/blog"})
   let settings = JSON.parse(localStorage.getItem('layout-setting'));
   settings.defaultPage = 1;

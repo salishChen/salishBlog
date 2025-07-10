@@ -1,7 +1,7 @@
 <template>
   <div style="margin: 30px">
     <el-row :gutter="15">
-      <el-form ref="elForm" :model="form" :rules="rules" size="medium" label-width="100px">
+      <el-form ref="elForm" :model="form" :rules="rules" size="default" label-width="100px">
         <el-col :span="22">
           <el-form-item label="标题" prop="title">
             <el-input v-model="form.title" placeholder="请输入标题" clearable :style="{width: '100%'}">

@@ -1,7 +1,7 @@
 <template>
    <!-- 授权用户 -->
    <el-dialog title="选择用户" v-model="visible" width="800px" top="5vh" append-to-body>
-      <el-form :model="queryParams" ref="queryRef" :inline="true">
+      <el-form class="app-search card" :model="queryParams" ref="queryRef" :inline="true">
          <el-form-item label="用户名称" prop="userName">
             <el-input
                v-model="queryParams.userName"

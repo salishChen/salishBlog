@@ -35,7 +35,6 @@ import useSettingsStore from '@/store/modules/settings'
 const router = useRouter()
 
 import {infiniteScroll} from "@/views/dashboard/mixins/infiniteScroll";
-
 const {isTail} = infiniteScroll()
 
 const data = reactive({

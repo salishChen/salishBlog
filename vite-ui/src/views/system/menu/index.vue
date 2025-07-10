@@ -1,6 +1,6 @@
 <template>
    <div class="app-container">
-      <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch">
+      <el-form class="app-search card" :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch">
          <el-form-item label="菜单名称" prop="menuName">
             <el-input
                v-model="queryParams.menuName"
@@ -26,62 +26,64 @@
          </el-form-item>
       </el-form>
 
-      <el-row :gutter="10" class="mb8">
+     <div class="app-content card">
+       <el-row :gutter="10" class="mb8">
          <el-col :span="1.5">
-            <el-button
+           <el-button
                type="primary"
                plain
                icon="Plus"
                @click="handleAdd"
                v-hasPermi="['system:menu:add']"
-            >新增</el-button>
+           >新增</el-button>
          </el-col>
          <el-col :span="1.5">
-            <el-button 
+           <el-button
                type="info"
                plain
                icon="Sort"
                @click="toggleExpandAll"
-            >展开/折叠</el-button>
+           >展开/折叠</el-button>
          </el-col>
          <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
-      </el-row>
+       </el-row>
 
-      <el-table
-         v-if="refreshTable"
-         v-loading="loading"
-         :data="menuList"
-         row-key="menuId"
-         :default-expand-all="isExpandAll"
-         :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
-      >
+       <el-table
+           v-if="refreshTable"
+           v-loading="loading"
+           :data="menuList"
+           row-key="menuId"
+           :default-expand-all="isExpandAll"
+           :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
+       >
          <el-table-column prop="menuName" label="菜单名称" :show-overflow-tooltip="true" width="160"></el-table-column>
          <el-table-column prop="icon" label="图标" align="center" width="100">
-            <template #default="scope">
-               <svg-icon :icon-class="scope.row.icon" />
-            </template>
+           <template #default="scope">
+             <svg-icon :icon-class="scope.row.icon" />
+           </template>
          </el-table-column>
          <el-table-column prop="orderNum" label="排序" width="60"></el-table-column>
          <el-table-column prop="perms" label="权限标识" :show-overflow-tooltip="true"></el-table-column>
          <el-table-column prop="component" label="组件路径" :show-overflow-tooltip="true"></el-table-column>
          <el-table-column prop="status" label="状态" width="80">
-            <template #default="scope">
-               <dict-tag :options="sys_normal_disable" :value="scope.row.status" />
-            </template>
+           <template #default="scope">
+             <dict-tag :options="sys_normal_disable" :value="scope.row.status" />
+           </template>
          </el-table-column>
          <el-table-column label="创建时间" align="center" width="160" prop="createTime">
-            <template #default="scope">
-               <span>{{ parseTime(scope.row.createTime) }}</span>
-            </template>
+           <template #default="scope">
+             <span>{{ parseTime(scope.row.createTime) }}</span>
+           </template>
          </el-table-column>
          <el-table-column label="操作" align="center" width="210" class-name="small-padding fixed-width">
-            <template #default="scope">
-               <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['system:menu:edit']">修改</el-button>
-               <el-button link type="primary" icon="Plus" @click="handleAdd(scope.row)" v-hasPermi="['system:menu:add']">新增</el-button>
-               <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['system:menu:remove']">删除</el-button>
-            </template>
+           <template #default="scope">
+             <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['system:menu:edit']">修改</el-button>
+             <el-button link type="primary" icon="Plus" @click="handleAdd(scope.row)" v-hasPermi="['system:menu:add']">新增</el-button>
+             <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['system:menu:remove']">删除</el-button>
+           </template>
          </el-table-column>
-      </el-table>
+       </el-table>
+     </div>
 
       <!-- 添加或修改菜单对话框 -->
       <el-dialog :title="title" v-model="open" width="680px" append-to-body>

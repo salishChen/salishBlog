@@ -47,7 +47,7 @@
                 v-model="moveNum"
                 :min="1"
                 :max="10"
-                size="small"
+                size="default"
                 controls-position="right"
               />
             </span>
@@ -74,13 +74,13 @@
                         :allow-drop="allowDrop"
                         :filter-node-method="filterNode">
                     <template #default="{ node, data }">
-                        <el-input v-model='data.label' size="small" v-if='data.edit' @blur='data.edit = false'></el-input>
+                        <el-input v-model='data.label' size="default" v-if='data.edit' @blur='data.edit = false'></el-input>
                         <span :id='data.id' @drop="drop_handler" @dragover="dragover_handler" v-else >{{ node.label }}</span>
 
                         <span style='margin-left: 20px;' class='tree-btn' v-if="data.parentId != 0">
-                            <el-button @click="data.edit=true" size="small" text type="success">重命名</el-button>
-                            <!-- <el-button @click="clone(node, data)" size="small" v-if="data.id != 0" text type="success">克隆</el-button> -->
-                            <el-button @click="remove(node, data)" size="small" v-if="data.id != 0" text type="success">删除</el-button>
+                            <el-button @click="data.edit=true" size="default" text type="success">重命名</el-button>
+                            <!-- <el-button @click="clone(node, data)" size="default" v-if="data.id != 0" text type="success">克隆</el-button> -->
+                            <el-button @click="remove(node, data)" size="default" v-if="data.id != 0" text type="success">删除</el-button>
                         </span>
                     </template>
                 </el-tree>

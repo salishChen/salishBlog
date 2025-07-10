@@ -123,7 +123,26 @@ aside {
 
 //main-container全局样式
 .app-container {
+  //padding: 20px;
+  min-height: 90vh;
+}
+
+.app-search {
+  padding: 20px 20px 0 20px;
+  margin-bottom: 10px;
+}
+
+.app-content {
   padding: 20px;
+}
+
+.card {
+  box-sizing: border-box;
+  overflow-x: hidden;
+  background-color: var(--el-bg-color);
+  border: 1px solid var(--el-border-color-light);
+  border-radius: 6px;
+  box-shadow: 0 0 12px #0000000d;
 }
 
 .components-container {
