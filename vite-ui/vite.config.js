@@ -31,8 +31,8 @@ export default defineConfig(({mode, command}) => {
           proxy: {
             // https://cn.vitejs.dev/config/#server-proxy
             [env.VITE_APP_BASE_API]: {
-              // target: VITE_APP_ENV === "production" ? `http://192.168.3.222:6238` : `http://127.0.0.1:6239`,
-              target: `http://blogg.salish.top`,
+              target: VITE_APP_ENV === "production" ? `http://192.168.3.222:6238` : `http://127.0.0.1:6239`,
+              // target: `http://blogg.salish.top`,
               changeOrigin: true,
               rewrite: (path) => path.replace(new RegExp('^'+env.VITE_APP_BASE_API), '')
             }

@@ -1,99 +1,107 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form class="app-search card" :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch"
+             label-width="68px">
       <el-form-item label="标签" prop="tag">
         <el-input
-          v-model="queryParams.tag"
-          placeholder="请输入标签"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
+            v-model="queryParams.tag"
+            placeholder="请输入标签"
+            clearable
+            size="default"
+            @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+        <el-button type="primary" icon="el-icon-search" size="default" @click="handleQuery">搜索</el-button>
+        <el-button icon="el-icon-refresh" size="default" @click="resetQuery">重置</el-button>
       </el-form-item>
     </el-form>
-
-    <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-          type="primary"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['business:pit:add']"
-        >新增</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['business:pit:edit']"
-        >修改</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['business:pit:remove']"
-        >删除</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="warning"
-          plain
-          icon="el-icon-download"
-          size="mini"
-          @click="handleExport"
-          v-hasPermi="['business:pit:export']"
-        >导出</el-button>
-      </el-col>
-      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
-    </el-row>
-
-    <el-table v-loading="loading" :data="pitList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="id" align="center" prop="id" v-if="false"/>
-      <el-table-column label="内容" align="center" prop="content" />
-      <el-table-column label="标签" align="center" prop="tag" />
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
-        <template #default="scope">
+    <div class="app-content card">
+      <el-row :gutter="10" class="mb8">
+        <el-col :span="1.5">
           <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-edit"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['business:pit:edit']"
-          >修改</el-button>
+              type="primary"
+              plain
+              icon="Plus"
+              size="default"
+              @click="handleAdd"
+              v-hasPermi="['business:pit:add']"
+          >新增
+          </el-button>
+        </el-col>
+        <el-col :span="1.5">
           <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-delete"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['business:pit:remove']"
-          >删除</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-    
-    <pagination
-      v-show="total>0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
-      :limit.sync="queryParams.pageSize"
-      @pagination="getList"
-    />
+              type="success"
+              plain
+              icon="Edit"
+              size="default"
+              :disabled="single"
+              @click="handleUpdate"
+              v-hasPermi="['business:pit:edit']"
+          >修改
+          </el-button>
+        </el-col>
+        <el-col :span="1.5">
+          <el-button
+              type="danger"
+              plain
+              icon="delete"
+              size="default"
+              :disabled="multiple"
+              @click="handleDelete"
+              v-hasPermi="['business:pit:remove']"
+          >删除
+          </el-button>
+        </el-col>
+        <el-col :span="1.5">
+          <el-button
+              type="warning"
+              plain
+              icon="Download"
+              size="default"
+              @click="handleExport"
+              v-hasPermi="['business:pit:export']"
+          >导出
+          </el-button>
+        </el-col>
+        <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
+      </el-row>
+
+      <el-table v-loading="loading" :data="pitList" @selection-change="handleSelectionChange">
+        <el-table-column type="selection" width="55" align="center"/>
+        <el-table-column label="id" align="center" prop="id" v-if="false"/>
+        <el-table-column label="内容" align="center" prop="content"/>
+        <el-table-column label="标签" align="center" prop="tag"/>
+        <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+          <template #default="scope">
+            <el-button
+                size="default"
+                type="text"
+                icon="Edit"
+                @click="handleUpdate(scope.row)"
+                v-hasPermi="['business:pit:edit']"
+            >修改
+            </el-button>
+            <el-button
+                size="default"
+                type="text"
+                icon="delete"
+                @click="handleDelete(scope.row)"
+                v-hasPermi="['business:pit:remove']"
+            >删除
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+
+      <pagination
+          v-show="total>0"
+          :total="total"
+          :page.sync="queryParams.pageNum"
+          :limit.sync="queryParams.pageSize"
+          @pagination="getList"
+      />
+    </div>
 
     <!-- 添加或修改填坑对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
@@ -102,7 +110,7 @@
           <editor v-model="form.content" :min-height="192"/>
         </el-form-item>
         <el-form-item label="标签" prop="tag">
-          <el-input v-model="form.tag" placeholder="请输入标签" />
+          <el-input v-model="form.tag" placeholder="请输入标签"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -114,7 +122,7 @@
 </template>
 
 <script>
-import { listPit, getPit, delPit, addPit, updatePit, exportPit } from "@/api/business/pit";
+import {listPit, getPit, delPit, addPit, updatePit, exportPit} from "@/api/business/pit";
 import Editor from '@/components/Editor';
 
 export default {
@@ -154,8 +162,7 @@ export default {
       // 表单参数
       form: {},
       // 表单校验
-      rules: {
-      }
+      rules: {}
     };
   },
   created() {
@@ -209,7 +216,7 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.id)
-      this.single = selection.length!==1
+      this.single = selection.length !== 1
       this.multiple = !selection.length
     },
     /** 新增按钮操作 */
@@ -252,28 +259,28 @@ export default {
     handleDelete(row) {
       const ids = row.id || this.ids;
       this.$confirm('是否确认删除填坑编号为"' + ids + '"的数据项?', "警告", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning"
-        }).then(function() {
-          return delPit(ids);
-        }).then(() => {
-          this.getList();
-          this.msgSuccess("删除成功");
-        })
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      }).then(function () {
+        return delPit(ids);
+      }).then(() => {
+        this.getList();
+        this.msgSuccess("删除成功");
+      })
     },
     /** 导出按钮操作 */
     handleExport() {
       const queryParams = this.queryParams;
       this.$confirm('是否确认导出所有填坑数据项?', "警告", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning"
-        }).then(function() {
-          return exportPit(queryParams);
-        }).then(response => {
-          this.download(response.msg);
-        })
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      }).then(function () {
+        return exportPit(queryParams);
+      }).then(response => {
+        this.download(response.msg);
+      })
     }
   }
 };

@@ -1,6 +1,6 @@
 <template>
    <div class="app-container">
-      <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="68px">
+      <el-form class="app-search card" :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="68px">
          <el-form-item label="参数名称" prop="configName">
             <el-input
                v-model="queryParams.configName"
@@ -44,90 +44,101 @@
             <el-button icon="Refresh" @click="resetQuery">重置</el-button>
          </el-form-item>
       </el-form>
-
-      <el-row :gutter="10" class="mb8">
+     <div class="app-content card">
+       <el-row :gutter="10" class="mb8">
          <el-col :span="1.5">
-            <el-button
+           <el-button
                type="primary"
                plain
                icon="Plus"
                @click="handleAdd"
                v-hasPermi="['system:config:add']"
-            >新增</el-button>
+           >新增
+           </el-button>
          </el-col>
          <el-col :span="1.5">
-            <el-button
+           <el-button
                type="success"
                plain
                icon="Edit"
                :disabled="single"
                @click="handleUpdate"
                v-hasPermi="['system:config:edit']"
-            >修改</el-button>
+           >修改
+           </el-button>
          </el-col>
          <el-col :span="1.5">
-            <el-button
+           <el-button
                type="danger"
                plain
                icon="Delete"
                :disabled="multiple"
                @click="handleDelete"
                v-hasPermi="['system:config:remove']"
-            >删除</el-button>
+           >删除
+           </el-button>
          </el-col>
          <el-col :span="1.5">
-            <el-button
+           <el-button
                type="warning"
                plain
                icon="Download"
                @click="handleExport"
                v-hasPermi="['system:config:export']"
-            >导出</el-button>
+           >导出
+           </el-button>
          </el-col>
          <el-col :span="1.5">
-            <el-button
+           <el-button
                type="danger"
                plain
                icon="Refresh"
                @click="handleRefreshCache"
                v-hasPermi="['system:config:remove']"
-            >刷新缓存</el-button>
+           >刷新缓存
+           </el-button>
          </el-col>
          <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
-      </el-row>
+       </el-row>
 
-      <el-table v-loading="loading" :data="configList" @selection-change="handleSelectionChange">
-         <el-table-column type="selection" width="55" align="center" />
-         <el-table-column label="参数主键" align="center" prop="configId" />
-         <el-table-column label="参数名称" align="center" prop="configName" :show-overflow-tooltip="true" />
-         <el-table-column label="参数键名" align="center" prop="configKey" :show-overflow-tooltip="true" />
-         <el-table-column label="参数键值" align="center" prop="configValue" :show-overflow-tooltip="true" />
+       <el-table v-loading="loading" :data="configList" @selection-change="handleSelectionChange">
+         <el-table-column type="selection" width="55" align="center"/>
+         <el-table-column label="参数主键" align="center" prop="configId"/>
+         <el-table-column label="参数名称" align="center" prop="configName" :show-overflow-tooltip="true"/>
+         <el-table-column label="参数键名" align="center" prop="configKey" :show-overflow-tooltip="true"/>
+         <el-table-column label="参数键值" align="center" prop="configValue" :show-overflow-tooltip="true"/>
          <el-table-column label="系统内置" align="center" prop="configType">
-            <template #default="scope">
-               <dict-tag :options="sys_yes_no" :value="scope.row.configType" />
-            </template>
+           <template #default="scope">
+             <dict-tag :options="sys_yes_no" :value="scope.row.configType"/>
+           </template>
          </el-table-column>
-         <el-table-column label="备注" align="center" prop="remark" :show-overflow-tooltip="true" />
+         <el-table-column label="备注" align="center" prop="remark" :show-overflow-tooltip="true"/>
          <el-table-column label="创建时间" align="center" prop="createTime" width="180">
-            <template #default="scope">
-               <span>{{ parseTime(scope.row.createTime) }}</span>
-            </template>
+           <template #default="scope">
+             <span>{{ parseTime(scope.row.createTime) }}</span>
+           </template>
          </el-table-column>
          <el-table-column label="操作" align="center" width="150" class-name="small-padding fixed-width">
-            <template #default="scope">
-               <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['system:config:edit']" >修改</el-button>
-               <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['system:config:remove']">删除</el-button>
-            </template>
+           <template #default="scope">
+             <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)"
+                        v-hasPermi="['system:config:edit']">修改
+             </el-button>
+             <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)"
+                        v-hasPermi="['system:config:remove']">删除
+             </el-button>
+           </template>
          </el-table-column>
-      </el-table>
+       </el-table>
 
-      <pagination
-         v-show="total > 0"
-         :total="total"
-         v-model:page="queryParams.pageNum"
-         v-model:limit="queryParams.pageSize"
-         @pagination="getList"
-      />
+       <pagination
+           v-show="total > 0"
+           :total="total"
+           v-model:page="queryParams.pageNum"
+           v-model:limit="queryParams.pageSize"
+           @pagination="getList"
+       />
+
+     </div>
 
       <!-- 添加或修改参数配置对话框 -->
       <el-dialog :title="title" v-model="open" width="500px" append-to-body>

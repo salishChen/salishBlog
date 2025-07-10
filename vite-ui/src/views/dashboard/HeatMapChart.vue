@@ -75,7 +75,7 @@ export default {
           },
           dayLabel: {
             firstDay: 1, // 从周一开始
-            nameMap:'cn'
+            nameMap:['Sun.','Mon.','Tue.','Wed.','Thu.','Fri.','Sat.']
           },
           monthLabel:{
             nameMap:'cn'

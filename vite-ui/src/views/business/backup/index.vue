@@ -1,109 +1,106 @@
 <template>
   <div class="app-container">
-    <!--    <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="68px">
-          <el-form-item>
-            <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-            <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
-          </el-form-item>
-        </el-form>-->
 
-    <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-          type="primary"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['business:backup:add']"
-        >新增
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['business:backup:edit']"
-        >修改
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['business:backup:remove']"
-        >删除
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="warning"
-          plain
-          icon="el-icon-download"
-          size="mini"
-          @click="handleExport"
-          v-hasPermi="['business:backup:export']"
-        >导出
-        </el-button>
-      </el-col>
-      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
-    </el-row>
-
-    <el-table v-loading="loading" :data="backupList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center"/>
-      <el-table-column label="id" align="center" prop="id" v-if="false"/>
-      <el-table-column label="数据库名称" align="center" prop="sqlName"/>
-      <el-table-column label="数据库ip" align="center" prop="sqlIp"/>
-<!--      <el-table-column label="用户名" align="center" prop="sqlUsername"/>-->
-<!--      <el-table-column label="密码" align="center" prop="sqlPassword"/>-->
-      <el-table-column label="定时规则" align="center" prop="sqlCron"/>
-      <el-table-column label="备份数量限制" align="center" prop="fileLimit"/>
-      <el-table-column label="数据库类型" align="center" prop="type" :formatter="typeFormat"/>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
-        <template #default="scope">
+    <div  class="app-content card">
+      <el-row :gutter="10" class="mb8">
+        <el-col :span="1.5">
           <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-edit"
-            @click="handleRun(scope.row)"
-            v-hasPermi="['business:backup:edit']"
-          >手动备份
+              type="primary"
+              plain
+              icon="Plus"
+              size="default"
+              @click="handleAdd"
+              v-hasPermi="['business:backup:add']"
+          >新增
           </el-button>
+        </el-col>
+        <el-col :span="1.5">
           <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-edit"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['business:backup:edit']"
+              type="success"
+              plain
+              icon="Edit"
+              size="default"
+              :disabled="single"
+              @click="handleUpdate"
+              v-hasPermi="['business:backup:edit']"
           >修改
           </el-button>
+        </el-col>
+        <el-col :span="1.5">
           <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-delete"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['business:backup:remove']"
+              type="danger"
+              plain
+              icon="delete"
+              size="default"
+              :disabled="multiple"
+              @click="handleDelete"
+              v-hasPermi="['business:backup:remove']"
           >删除
           </el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+        </el-col>
+        <el-col :span="1.5">
+          <el-button
+              type="warning"
+              plain
+              icon="Download"
+              size="default"
+              @click="handleExport"
+              v-hasPermi="['business:backup:export']"
+          >导出
+          </el-button>
+        </el-col>
+        <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
+      </el-row>
 
-    <pagination
-      v-show="total>0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
-      :fileLimit.sync="queryParams.pageSize"
-      @pagination="getList"
-    />
+      <el-table v-loading="loading" :data="backupList" @selection-change="handleSelectionChange">
+        <el-table-column type="selection" width="55" align="center"/>
+        <el-table-column label="id" align="center" prop="id" v-if="false"/>
+        <el-table-column label="数据库名称" align="center" prop="sqlName"/>
+        <el-table-column label="数据库ip" align="center" prop="sqlIp"/>
+        <!--      <el-table-column label="用户名" align="center" prop="sqlUsername"/>-->
+        <!--      <el-table-column label="密码" align="center" prop="sqlPassword"/>-->
+        <el-table-column label="定时规则" align="center" prop="sqlCron"/>
+        <el-table-column label="备份数量限制" align="center" prop="fileLimit"/>
+        <el-table-column label="数据库类型" align="center" prop="type" :formatter="typeFormat"/>
+        <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+          <template #default="scope">
+            <el-button
+                size="default"
+                type="text"
+                icon="Edit"
+                @click="handleRun(scope.row)"
+                v-hasPermi="['business:backup:edit']"
+            >手动备份
+            </el-button>
+            <el-button
+                size="default"
+                type="text"
+                icon="Edit"
+                @click="handleUpdate(scope.row)"
+                v-hasPermi="['business:backup:edit']"
+            >修改
+            </el-button>
+            <el-button
+                size="default"
+                type="text"
+                icon="delete"
+                @click="handleDelete(scope.row)"
+                v-hasPermi="['business:backup:remove']"
+            >删除
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+
+      <pagination
+          v-show="total>0"
+          :total="total"
+          :page.sync="queryParams.pageNum"
+          :fileLimit.sync="queryParams.pageSize"
+          @pagination="getList"
+      />
+    </div>
+    
 
     <!-- 添加或修改数据库备份对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="400px" append-to-body>

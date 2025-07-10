@@ -188,7 +188,7 @@
             <el-input v-model="activeData.action" placeholder="请输入上传地址" clearable />
           </el-form-item>
           <el-form-item v-if="activeData['list-type'] !== undefined" label="列表类型">
-            <el-radio-group v-model="activeData['list-type']" size="small">
+            <el-radio-group v-model="activeData['list-type']" size="default">
               <el-radio-button label="text">
                 text
               </el-radio-button>
@@ -222,8 +222,8 @@
                   <div class="select-line-icon option-drag">
                     <i class="el-icon-s-operation" />
                   </div>
-                  <el-input v-model="element.label" placeholder="选项名" size="small" />
-                  <el-input placeholder="选项值" size="small" :value="element.value"
+                  <el-input v-model="element.label" placeholder="选项名" size="default" />
+                  <el-input placeholder="选项值" size="default" :value="element.value"
                     @input="setOptionValue(element, $event)" />
                   <div class="close-btn select-line-icon" @click="activeData.options.splice(index, 1)">
                     <el-icon>
@@ -245,7 +245,7 @@
           <template v-if="['el-cascader'].indexOf(activeData.tag) > -1">
             <el-divider>选项</el-divider>
             <el-form-item label="数据类型">
-              <el-radio-group v-model="activeData.dataType" size="small">
+              <el-radio-group v-model="activeData.dataType" size="default">
                 <el-radio-button label="dynamic">
                   动态数据
                 </el-radio-button>

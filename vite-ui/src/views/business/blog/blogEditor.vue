@@ -1,6 +1,6 @@
 <template>
   <div style="margin: 30px">
-    <el-form ref="elForm" :model="form" :rules="rules" size="medium" label-width="100px">
+    <el-form ref="elForm" :model="form" :rules="rules" size="default" label-width="100px">
       <el-row :gutter="15">
         <el-col :span="22">
           <el-form-item label="标题" prop="title">
@@ -24,7 +24,7 @@
                 :on-success="handleAvatarSuccess"
                 :before-upload="coverBeforeUpload">
               <img v-if="form.cover" :src="form.cover" class="avatar">
-              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+              <i v-else class="Plus avatar-uploader-icon"></i>
             </el-upload>
           </el-form-item>
 
@@ -45,8 +45,8 @@
         <el-col :span="8">
           <el-form-item label="博客类型" prop="blogType">
             <el-select v-model="form.blogType" placeholder="请选择博客类型" clearable :style="{width: '100%'}">
-              <el-option v-for="(item, index) in blogTypeOptions" :key="index" :label="item.dictLabel"
-                         :value="item.dictValue" :disabled="item.disabled"></el-option>
+              <el-option v-for="(item, index) in blogTypeOptions" :key="index" :label="item.label"
+                         :value="item.value" :disabled="item.disabled"></el-option>
             </el-select>
           </el-form-item>
         </el-col>
@@ -54,8 +54,8 @@
           <el-form-item label="内容类型" prop="contentType">
             <el-select v-model="form.contentType" placeholder="请选择内容类型" clearable
                        :style="{width: '100%'}">
-              <el-option v-for="(item, index) in contentTypeOptions" :key="index" :label="item.dictLabel"
-                         :value="item.dictValue" :disabled="item.disabled"></el-option>
+              <el-option v-for="(item, index) in contentTypeOptions" :key="index" :label="item.label"
+                         :value="item.value" :disabled="item.disabled"></el-option>
             </el-select>
           </el-form-item>
         </el-col>
@@ -80,7 +80,7 @@
     </el-row>
   </div>
 </template>
-<script>
+<script setup>
 import {listTag} from "@/api/business/tag";
 import Editor from '@/components/Editor';
 import {getToken} from "@/utils/auth";
@@ -88,131 +88,122 @@ import {addBlog, updateBlog, getBlog} from "@/api/business/blog";
 import Markdown from "@/components/Markdowm";
 import useTagsViewStore from '@/store/modules/tagsView'
 
-export default {
-  components: {Markdown},
-  name: 'editBlog',
-  props: [],
-  data() {
-    return {
-      blogId: '',
-      imgUrl: '',
-      uploadUrl: import.meta.env.VUE_APP_BASE_API + "/common/upload",
-      headers: {Authorization: "Bearer " + getToken()},
-      form: {
-        title: '',
-        summary: undefined,
-        cover: null,
-        tags: [],
-        tagId: undefined,
-        blogType: undefined,
-        contentType: '1',
-        content: undefined,
-      },
-      rules: {
-        title: [{required: true, message: '请输入标题', trigger: 'blur'}],
-        blogType: [{required: true, message: '请选择博客类型', trigger: 'change'}],
-        contentType: [{required: true, message: '请选择内容类型', trigger: 'change'}],
-        content: [{required: true, message: '请输入博文内容', trigger: ['blur', 'change']}],
-      },
-      tagsOptions: [],
-      tags: [],
-      blogTypeOptions: [],
-      contentTypeOptions: [],
-    }
-  },
+const { proxy } = getCurrentInstance();
+const route = useRoute()
+const router = useRouter()
 
-  watch: {},
-  created() {
-    this.getDicts("content_type").then(response => {
-      this.contentTypeOptions = response.data;
-    });
-    this.getDicts("blog_type").then(response => {
-      this.blogTypeOptions = response.data;
-    });
-    listTag().then(response => {
-      this.tagsOptions = response.rows;
-    });
-    this.blogId = this.$route.query.id;
-    if (this.blogId != undefined && this.blogId != "") {
-      getBlog(this.blogId).then(response => {
-        this.form = response.data;
-        this.tags = [];
-        this.form.tagId.split(",").forEach(item => {
-          this.tags.push(Number(item));
-        })
-        console.log(this.tags)
+const blogId = ref('')
+const imgUrl = ref('')
+const uploadUrl = ref(import.meta.env.VUE_APP_BASE_API + "/common/upload")
+const headers = ref({Authorization: "Bearer " + getToken()})
+const tagsOptions = ref([])
+const tags = ref([])
+const blogTypeOptions = proxy.useDict("blog_type").blog_type;
+const contentTypeOptions = proxy.useDict("content_type").content_type;
+
+
+const data = reactive({
+  form: {
+    title: '',
+    summary: undefined,
+    cover: null,
+    tags: [],
+    tagId: undefined,
+    blogType: undefined,
+    contentType: '1',
+    content: undefined,
+  },
+  rules: {
+    title: [{required: true, message: '请输入标题', trigger: 'blur'}],
+    blogType: [{required: true, message: '请选择博客类型', trigger: 'change'}],
+    contentType: [{required: true, message: '请选择内容类型', trigger: 'change'}],
+    content: [{required: true, message: '请输入博文内容', trigger: ['blur', 'change']}],
+  },
+})
+
+const {form, rules} = toRefs(data)
+
+
+function save() {
+  proxy.$refs['elForm'].validate(valid => {
+    if (!valid) return
+    // TODO 提交表单
+    form.value.tagId = tags.value.toString();
+    if (blogId.value != undefined && blogId.value != "") {
+      form.value.id = blogId.value;
+      updateBlog(form.value).then(res => {
+        proxy.$modal.msgSuccess("保存成功");
+      });
+    } else {
+      addBlog(form.value).then(res => {
+        if (res.code == 200) {
+          blogId.value = res.data.id
+        }
+        proxy.$modal.msgSuccess("新增成功");
       });
     }
-  },
-  mounted() {
-  },
-  methods: {
-    save() {
-      this.$refs['elForm'].validate(valid => {
-        if (!valid) return
-        // TODO 提交表单
-        this.form.tagId = this.tags.toString();
-        if (this.blogId != undefined && this.blogId != "") {
-          this.form.id = this.blogId;
-          updateBlog(this.form).then(res => {
-            this.msgSuccess("保存成功");
-          });
-        } else {
-          addBlog(this.form).then(res => {
-            if (res.code == 200) {
-              this.blogId = res.data.id
-            }
-            this.msgSuccess("新增成功");
-          });
-        }
-      })
-    },
-    submitForm() {
-      this.$refs['elForm'].validate(valid => {
-        if (!valid) return
-        // TODO 提交表单
-        this.form.tagId = this.tags.toString();
-        if (this.blogId != undefined && this.blogId != "") {
-          this.form.id = this.blogId;
-          updateBlog(this.form).then(response => {
-            this.msgSuccess("修改成功");
-            this.useTagsViewStore.delView(this.$route)
-            this.$router.replace({path: "/blog"});
-          });
-        } else {
-          addBlog(this.form).then(response => {
-            this.msgSuccess("新增成功");
-            this.useTagsViewStore.delView(this.$route)
-            this.$router.replace({path: "/blog"});
-          });
-        }
-      })
-    },
-    resetForm() {
-      this.$refs['elForm'].resetFields()
-    },
-    addOutsideUrl() {
-      this.form.cover = this.imgUrl
-      this.imgUrl = "";
-    },
-    coverBeforeUpload(file) {
-      let isRightSize = file.size / 1024 / 1024 < 4
-      if (!isRightSize) {
-        this.$message.error('文件大小超过 4MB')
-      }
-      return isRightSize
-    },
-    handleAvatarSuccess(res) {
-      if (res.code == 200) {
-        this.form.cover = res.url;
-      }
-    },
-    handleUploadImage(event, insertImage, files) {
-      // 拿到 files 之后上传到文件服务器，然后向编辑框中插入对应的内容
-      console.log(files);
-    },
+  })
+}
+
+function submitForm() {
+  proxy.$refs['elForm'].validate(valid => {
+    if (!valid) return
+    // TODO 提交表单
+    form.value.tagId = tags.value.toString();
+    if (blogId.value != undefined && blogId.value != "") {
+      form.value.id = blogId.value;
+      updateBlog(form.value).then(response => {
+        proxy.$modal.msgSuccess("修改成功");
+        useTagsViewStore().delView(route)
+        router.replace({path: "/blog"});
+      });
+    } else {
+      addBlog(form.value).then(response => {
+        proxy.$modal.msgSuccess("新增成功");
+        useTagsViewStore().delView(route)
+        router.replace({path: "/blog"});
+      });
+    }
+  })
+}
+
+function resetForm() {
+  proxy.resetForm("elForm")
+}
+
+function addOutsideUrl() {
+  form.value.cover = imgUrl.value
+  imgUrl.value = "";
+}
+
+function coverBeforeUpload(file) {
+  let isRightSize = file.size / 1024 / 1024 < 4
+  if (!isRightSize) {
+    proxy.$modal.msgError('文件大小超过 4MB')
+  }
+  return isRightSize
+}
+
+function handleAvatarSuccess(res) {
+  if (res.code == 200) {
+    form.value.cover = res.url;
   }
 }
+
+listTag().then(response => {
+  tagsOptions.value = response.rows;
+});
+blogId.value = route.query.id;
+if (blogId.value != undefined && blogId.value != "") {
+  getBlog(blogId.value).then(response => {
+    form.value = response.data;
+    tags.value = [];
+    form.value.tagId.split(",").forEach(item => {
+      tags.value.push(Number(item));
+    })
+  });
+}
+
 
 </script>
 <style>

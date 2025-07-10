@@ -1,6 +1,6 @@
 <template>
    <div class="app-container">
-      <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch">
+      <el-form class="app-search card" :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch">
          <el-form-item label="岗位编码" prop="postCode">
             <el-input
                v-model="queryParams.postCode"
@@ -35,79 +35,81 @@
          </el-form-item>
       </el-form>
 
-      <el-row :gutter="10" class="mb8">
+     <div class="app-content card">
+       <el-row :gutter="10" class="mb8">
          <el-col :span="1.5">
-            <el-button
+           <el-button
                type="primary"
                plain
                icon="Plus"
                @click="handleAdd"
                v-hasPermi="['system:post:add']"
-            >新增</el-button>
+           >新增</el-button>
          </el-col>
          <el-col :span="1.5">
-            <el-button
+           <el-button
                type="success"
                plain
                icon="Edit"
                :disabled="single"
                @click="handleUpdate"
                v-hasPermi="['system:post:edit']"
-            >修改</el-button>
+           >修改</el-button>
          </el-col>
          <el-col :span="1.5">
-            <el-button
+           <el-button
                type="danger"
                plain
                icon="Delete"
                :disabled="multiple"
                @click="handleDelete"
                v-hasPermi="['system:post:remove']"
-            >删除</el-button>
+           >删除</el-button>
          </el-col>
          <el-col :span="1.5">
-            <el-button
+           <el-button
                type="warning"
                plain
                icon="Download"
                @click="handleExport"
                v-hasPermi="['system:post:export']"
-            >导出</el-button>
+           >导出</el-button>
          </el-col>
          <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
-      </el-row>
+       </el-row>
 
-      <el-table v-loading="loading" :data="postList" @selection-change="handleSelectionChange">
+       <el-table v-loading="loading" :data="postList" @selection-change="handleSelectionChange">
          <el-table-column type="selection" width="55" align="center" />
          <el-table-column label="岗位编号" align="center" prop="postId" />
          <el-table-column label="岗位编码" align="center" prop="postCode" />
          <el-table-column label="岗位名称" align="center" prop="postName" />
          <el-table-column label="岗位排序" align="center" prop="postSort" />
          <el-table-column label="状态" align="center" prop="status">
-            <template #default="scope">
-               <dict-tag :options="sys_normal_disable" :value="scope.row.status" />
-            </template>
+           <template #default="scope">
+             <dict-tag :options="sys_normal_disable" :value="scope.row.status" />
+           </template>
          </el-table-column>
          <el-table-column label="创建时间" align="center" prop="createTime" width="180">
-            <template #default="scope">
-               <span>{{ parseTime(scope.row.createTime) }}</span>
-            </template>
+           <template #default="scope">
+             <span>{{ parseTime(scope.row.createTime) }}</span>
+           </template>
          </el-table-column>
          <el-table-column label="操作" width="180" align="center" class-name="small-padding fixed-width">
-            <template #default="scope">
-               <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['system:post:edit']">修改</el-button>
-               <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['system:post:remove']">删除</el-button>
-            </template>
+           <template #default="scope">
+             <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['system:post:edit']">修改</el-button>
+             <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['system:post:remove']">删除</el-button>
+           </template>
          </el-table-column>
-      </el-table>
+       </el-table>
 
-      <pagination
-         v-show="total > 0"
-         :total="total"
-         v-model:page="queryParams.pageNum"
-         v-model:limit="queryParams.pageSize"
-         @pagination="getList"
-      />
+       <pagination
+           v-show="total > 0"
+           :total="total"
+           v-model:page="queryParams.pageNum"
+           v-model:limit="queryParams.pageSize"
+           @pagination="getList"
+       />
+     </div>
 
       <!-- 添加或修改岗位对话框 -->
       <el-dialog :title="title" v-model="open" width="500px" append-to-body>

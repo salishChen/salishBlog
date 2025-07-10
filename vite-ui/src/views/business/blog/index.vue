@@ -1,126 +1,129 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form class="app-search card" :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="标题" prop="title">
         <el-input
             v-model="queryParams.title"
             placeholder="请输入标题"
             clearable
-            size="small"
+            size="default"
             @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item label="博客类型" prop="blogType">
-        <el-select v-model="queryParams.blogType" size="small" placeholder="请选择博客类型" clearable
+        <el-select v-model="queryParams.blogType" size="default" placeholder="请选择博客类型" clearable
                    :style="{width: '100%'}">
           <el-option v-for="(item, index) in blogTypeOptions" :key="index" :label="item.dictLabel"
                      :value="item.dictValue" :disabled="item.disabled"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="标签" prop="tagId">
-        <el-select v-model="queryParams.tagId" size="small" placeholder="请选择标签" clearable :style="{width: '100%'}">
+        <el-select v-model="queryParams.tagId" size="default" placeholder="请选择标签" clearable
+                   :style="{width: '100%'}">
           <el-option v-for="(item, index) in tagsOptions" :key="index" :label="item.tag"
                      :value="item.id" :disabled="item.disabled"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+        <el-button type="primary" icon="el-icon-search" size="default" @click="handleQuery">搜索</el-button>
+        <el-button icon="el-icon-refresh" size="default" @click="resetQuery">重置</el-button>
       </el-form-item>
     </el-form>
 
-    <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-            type="primary"
-            plain
-            icon="el-icon-plus"
-            size="mini"
-            @click="handleAdd"
-            v-hasPermi="['tBlog:blog:add']"
-        >新增
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-            type="success"
-            plain
-            icon="el-icon-edit"
-            size="mini"
-            :disabled="single"
-            @click="handleUpdate"
-            v-hasPermi="['tBlog:blog:edit']"
-        >修改
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-            type="danger"
-            plain
-            icon="el-icon-delete"
-            size="mini"
-            :disabled="multiple"
-            @click="handleDelete"
-            v-hasPermi="['tBlog:blog:remove']"
-        >删除
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-            type="warning"
-            plain
-            icon="el-icon-download"
-            size="mini"
-            @click="handleExport"
-            v-hasPermi="['tBlog:blog:export']"
-        >导出
-        </el-button>
-      </el-col>
-      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
-    </el-row>
-
-    <el-table v-loading="loading" :data="blogList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center"/>
-      <el-table-column label="标题" align="center" prop="title"/>
-      <el-table-column label="简介" align="center" prop="summary"/>
-      <el-table-column label="标签" align="center" prop="tagId">
-        <template #default="scope">
-          <template v-if="scope.row.tagId!='' && scope.row.tagId!=undefined">
-            <BlogTag v-for="tagid in scope.row.tagId.split(',')" :tag-color="tags[tagid].tagColor"
-                     :tag-name="tags[tagid].tag"/>
-          </template>
-        </template>
-      </el-table-column>
-      <el-table-column label="类型" align="center" prop="blogType" :formatter="blogTypeFormat"/>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
-        <template #default="scope">
+    <div class="app-content card">
+      <el-row :gutter="10" class="mb8">
+        <el-col :span="1.5">
           <el-button
-              size="mini"
-              type="text"
-              icon="el-icon-edit"
-              @click="handleUpdate(scope.row)"
+              type="primary"
+              plain
+              icon="Plus"
+              size="default"
+              @click="handleAdd"
+              v-hasPermi="['tBlog:blog:add']"
+          >新增
+          </el-button>
+        </el-col>
+        <el-col :span="1.5">
+          <el-button
+              type="success"
+              plain
+              icon="Edit"
+              size="default"
+              :disabled="single"
+              @click="handleUpdate"
               v-hasPermi="['tBlog:blog:edit']"
           >修改
           </el-button>
+        </el-col>
+        <el-col :span="1.5">
           <el-button
-              size="mini"
-              type="text"
-              icon="el-icon-delete"
-              @click="handleDelete(scope.row)"
+              type="danger"
+              plain
+              icon="delete"
+              size="default"
+              :disabled="multiple"
+              @click="handleDelete"
               v-hasPermi="['tBlog:blog:remove']"
           >删除
           </el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+        </el-col>
+        <el-col :span="1.5">
+          <el-button
+              type="warning"
+              plain
+              icon="Download"
+              size="default"
+              @click="handleExport"
+              v-hasPermi="['tBlog:blog:export']"
+          >导出
+          </el-button>
+        </el-col>
+        <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
+      </el-row>
 
-    <pagination
-        v-show="total>0"
-        :total="total"
-        :page.sync="queryParams.pageNum"
-        :limit.sync="queryParams.pageSize"
-        @pagination="getList"
-    />
+      <el-table v-loading="loading" :data="blogList" @selection-change="handleSelectionChange">
+        <el-table-column type="selection" width="55" align="center"/>
+        <el-table-column label="标题" align="center" prop="title"/>
+        <el-table-column label="简介" align="center" prop="summary"/>
+        <el-table-column label="标签" align="center" prop="tagId">
+          <template #default="scope">
+            <template v-if="scope.row.tagId!='' && scope.row.tagId!=undefined">
+              <BlogTag v-for="tagid in scope.row.tagId.split(',')" :tag-color="tags[tagid].tagColor"
+                       :tag-name="tags[tagid].tag"/>
+            </template>
+          </template>
+        </el-table-column>
+        <el-table-column label="类型" align="center" prop="blogType" :formatter="blogTypeFormat"/>
+        <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+          <template #default="scope">
+            <el-button
+                size="default"
+                type="text"
+                icon="Edit"
+                @click="handleUpdate(scope.row)"
+                v-hasPermi="['tBlog:blog:edit']"
+            >修改
+            </el-button>
+            <el-button
+                size="default"
+                type="text"
+                icon="delete"
+                @click="handleDelete(scope.row)"
+                v-hasPermi="['tBlog:blog:remove']"
+            >删除
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+
+      <pagination
+          v-show="total>0"
+          :total="total"
+          :page.sync="queryParams.pageNum"
+          :limit.sync="queryParams.pageSize"
+          @pagination="getList"
+      />
+    </div>
   </div>
 </template>
 
