@@ -12,7 +12,6 @@ import com.salishBlog.common.core.domain.AjaxResult;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 博客Service接口
@@ -41,6 +40,7 @@ public interface ITBlogService extends IService<TBlog> {
     List<TBlog> selectBlogByTag(TBlog tBlog);
 
     JSONObject blogStatistic();
+    JSONObject blogIntroduction();
 
     /**
      * 归档

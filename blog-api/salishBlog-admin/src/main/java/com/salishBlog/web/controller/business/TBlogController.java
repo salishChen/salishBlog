@@ -30,7 +30,6 @@ import com.salishBlog.business.domain.vo.TBlogVo;
 import com.salishBlog.business.domain.bo.TBlogQueryBo;
 import com.salishBlog.business.domain.bo.TBlogAddBo;
 import com.salishBlog.business.domain.bo.TBlogEditBo;
-import com.salishBlog.business.service.ITBlogService;
 import com.salishBlog.common.utils.poi.ExcelUtil;
 import com.salishBlog.common.core.page.TableDataInfo;
 import io.swagger.annotations.Api;
@@ -149,5 +148,15 @@ public class TBlogController extends BaseController {
     @GetMapping("/blogStatistic")
     public JSONObject blogStatistic() {
         return blogService.blogStatistic();
+    }
+
+    /**
+     * 统计博客
+     */
+    @ApiOperation("统计博客")
+    @PreAuthorize("@ss.hasPermi('tBlog:blog:list')")
+    @GetMapping("/blogIntroduction")
+    public JSONObject blogIntroduction() {
+        return blogService.blogIntroduction();
     }
 }

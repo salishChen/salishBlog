@@ -131,6 +131,35 @@ public class TBlogServiceImpl extends ServiceImpl<TBlogMapper, TBlog> implements
     }
 
     @Override
+    public JSONObject blogIntroduction() {
+        JSONObject json = new JSONObject();
+
+        // 获取当前日期
+        LocalDate now = LocalDate.now();
+
+        LocalDate yearFirstTime = now.minusDays(365);
+        String yearFirst = yearFirstTime.format(formatter);
+        String yearLast = now.format(formatter);
+
+        LambdaQueryWrapper<TBlog> lqw = Wrappers.lambdaQuery();
+        lqw.between(TBlog::getCreateTime, yearFirst, yearLast);
+        json.put("yearTotal", this.baseMapper.selectCount(lqw));
+        json.put("total", this.count());
+
+        LambdaQueryWrapper<TBlog> lqw2 = Wrappers.lambdaQuery();
+        lqw2.orderByDesc(TBlog::getCreateTime);
+        lqw2.last("limit 3");
+        List<TBlog> tBlogs = this.list(lqw2);
+        List<String> tagIds = tBlogs.stream().map(item -> Arrays.asList(item.getTagIds())).flatMap(item -> item.stream())
+                .collect(Collectors.groupingBy(item -> item, Collectors.counting())).entrySet().stream()
+                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder())).limit(3).map(item -> item.getKey()).collect(Collectors.toList());
+        String collect = tagIds.stream().map(item -> tagService.getById(item).getTag()).collect(Collectors.joining(","));
+        json.put("field", collect);
+
+        return json;
+    }
+
+    @Override
     public AjaxResult interfile(TBlog tBlog) {
         List<TBlog> blogs = this.baseMapper.interfile(tBlog);
         Map<String, List<TBlog>> collect = blogs.stream().collect(Collectors.groupingBy(TBlog::getTime));
