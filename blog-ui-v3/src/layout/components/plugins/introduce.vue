@@ -1,6 +1,4 @@
 <template>
-  <div class="app-container">
-
     <div class="introduction_container">
       <div style="margin: 20px">
         <div class="title">闲鱼笔记</div>
@@ -14,8 +12,6 @@
         </div>
       </div>
     </div>
-
-  </div>
 </template>
 
 <script setup>

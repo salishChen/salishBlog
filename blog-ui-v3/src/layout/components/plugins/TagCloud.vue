@@ -1,13 +1,9 @@
 <template>
-  <div class="app-container">
-
-    <div class="tag-cloud-container">
-      <div style="margin: 20px">
-        <h3>标签云</h3>
-        <BlogTag v-for="tag in tagsOptions" :tag-color="tag.tagColor" :tag-name="tag.tag" :tag-id="tag.id"/>
-      </div>
+  <div class="tag-cloud-container">
+    <div style="margin: 20px">
+      <h3>标签云</h3>
+      <BlogTag v-for="tag in tagsOptions" :tag-color="tag.tagColor" :tag-name="tag.tag" :tag-id="tag.id"/>
     </div>
-
   </div>
 </template>
 

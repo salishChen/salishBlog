@@ -5,11 +5,14 @@
         <div :class="{'fixed-header':fixedHeader}">
           <blog-navbar/>
         </div>
-        <introduce v-if="device!=='mobile'" class="introduction"/>
-        <div :class="device==='mobile'?'blog-main-mobile-container':'blog-main-container'">
-          <app-main/>
+        <div style="padding-top: 60px">
+          <introduce v-if="device!=='mobile'" class="introduction"/>
+          <div :class="device==='mobile'?'blog-main-mobile-container':'blog-main-container'">
+            <app-main/>
+          </div>
+          <tag-cloud v-if="device!=='mobile'" class="tag-cloud"/>
         </div>
-        <tag-cloud v-if="device!=='mobile'" class="tag-cloud"/>
+
         <right-panel>
           <settings ref="settingRef"/>
         </right-panel>
@@ -106,7 +109,7 @@ function setLayout() {
 .blog-main-container {
   border-radius: 2px;
   width: 70%;
-  margin: 0 0 0 0;
+  margin: 0 0 0 15%;
   display: inline-block;
   position: relative;
   padding-bottom: 30px;
@@ -121,7 +124,7 @@ function setLayout() {
   width: 13%;
   float: left;
   display: inline-block;
-  position: relative;
+  position: fixed;
 }
 
 .tag-cloud {
@@ -129,7 +132,7 @@ function setLayout() {
   width: 13%;
   float: right;
   display: inline-block;
-  position: relative;
+  position: fixed;
 }
 
 .drawer-bg {
