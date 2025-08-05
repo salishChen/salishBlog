@@ -116,6 +116,6 @@ watch(isTail, (newValue) => {
   background-color: #f1f1f1;
 }
 </style>
-<style src="@/style/blog.css" scoped>
+<style src="@/style/blog.scss" scoped>
 
 </style>

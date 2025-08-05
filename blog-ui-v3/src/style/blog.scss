@@ -28,6 +28,10 @@
   text-overflow: ellipsis;
 }
 
+.dark .blog-summary {
+  color: #ddd;
+}
+
 .blog-time {
   margin: 5px;
   min-height: 10px;
@@ -36,16 +40,28 @@
   color: #666;
 }
 
+.dark .blog-time {
+  color: #ddd;
+}
+
 .pagination-container {
   background-color: transparent !important;
 }
-.left-block{
+
+.left-block {
   display: inline-flex;
   position: relative;
   float: left;
 }
-.right-block{
+
+.right-block {
   display: inline-block;
   position: relative;
   float: right;
+}
+
+.dark {
+  .blog-container {
+    background-color: rgba(51, 51, 51, 0.4);;
+  }
 }

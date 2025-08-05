@@ -105,6 +105,11 @@ export const constantRoutes = [
         path: 'fillPit',
         component: () => import('@/views/blogui/fillPit/index'),
         name: 'fillPit',
+      },
+      { //博客内容
+        path: 'zzz',
+        component: () => import('@/views/blogui/zzz/index'),
+        name: 'zzz',
       }
     ]
   },

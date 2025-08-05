@@ -1,11 +1,11 @@
 <template>
   <div :class="classObj" class="app-wrapper" :style="{'--current-color': theme}">
     <template v-if="defaultPage==1 || defaultPage==undefined">
-      <div :class="{hasTagsView:needTagsView,sidebarHide:sidebar.hide}" style="background-color: #F2F3F5">
+      <div :class="{hasTagsView:needTagsView,sidebarHide:sidebar.hide}" class="isDark">
         <div :class="{'fixed-header':fixedHeader}">
           <blog-navbar/>
         </div>
-        <div style="padding-top: 60px">
+        <div style="padding-top: 60px" class="blog-container">
           <introduce v-if="device!=='mobile'" class="introduction"/>
           <div :class="device==='mobile'?'blog-main-mobile-container':'blog-main-container'">
             <app-main/>
@@ -94,6 +94,15 @@ function setLayout() {
 @import "@/assets/styles/mixin.scss";
 @import "@/assets/styles/variables.module.scss";
 
+.isDark{
+  background-color: var(--el-bg-color-page)
+}
+
+.dark .blog-container{
+  background-image: url("@/assets/images/zzz_bg.png");
+  background-size:100% 100%;
+  background-attachment:fixed;
+}
 .app-wrapper {
   @include clearfix;
   position: relative;

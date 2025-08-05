@@ -116,4 +116,4 @@ watch(isTail, (newValue) => {
 })
 
 </script>
-<style src="@/style/blog.css" scoped></style>
+<style src="@/style/blog.scss" scoped></style>

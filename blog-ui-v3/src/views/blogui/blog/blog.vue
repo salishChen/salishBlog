@@ -8,7 +8,6 @@
           <BlogTag :tag-color="tags[tagId].tagColor" :tag-name="tags[tagId].tag" :tag-id="tagId"/>
         </div>
       </div>
-      <div class="blog-content-title2">正文</div>
       <div class="blog-content-content">
         <v-md-editor mode="preview" default-show-toc v-model="blogContent.content"></v-md-editor>
       </div>
@@ -19,7 +18,6 @@
 
 <script setup>
 import {getBlog, listTag} from "@/api/business/salish";
-import Editor from '@/components/Editor';
 import BlogTag from "@/components/Tag";
 
 import {ref} from "vue";
@@ -52,7 +50,18 @@ listTag().then(response => {
 });
 
 </script>
-<style>
+<style scoped lang="scss">
+.dark{
+  .blog-content-container{
+    background-color: rgba(51, 51, 51, 0.4);
+  }
+  .v-md-editor{
+    background-color: rgba(51, 51, 51, 0.4);
+  }
+  .v-md-pre-wrapper {
+    background-color: rgba(51, 51, 51, 0.4) !important;
+  }
+}
 .blog-content-container {
   border-radius: 2px;
   background-color: #FFFFFF;
@@ -101,6 +110,10 @@ listTag().then(response => {
   font-size: 13px;
   font-weight: 200;
   color: #666;
+}
+
+.dark .blog-content-summary{
+  color: #ddd;
 }
 
 .pagination-container {

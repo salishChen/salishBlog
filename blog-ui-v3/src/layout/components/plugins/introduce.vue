@@ -1,7 +1,7 @@
 <template>
     <div class="introduction_container">
       <div style="margin: 20px">
-        <div class="title">闲鱼笔记</div>
+        <div class="title">咸鱼笔记</div>
         <div style="text-align: center">
           <img class="head_img" src="@/assets/logo/logo.png" alt="">
         </div>
@@ -32,6 +32,10 @@ onMounted(() => {
 })
 </script>
 <style scoped lang="scss">
+.dark .introduction_container{
+  background-color: rgba(51, 51, 51, 0.4);;
+}
+
 .introduction_container {
   border-radius: 2px;
   width: 100%;

@@ -68,7 +68,16 @@ getPitTagList()
 }
 
 </style>
-<style scoped>
+<style scoped lang="scss">
+
+.dark{
+  .pit{
+    background-color: rgba(51, 51, 51, 0.4);
+  }
+  .pit-container{
+    background-color: rgba(51, 51, 51, 0.4);
+  }
+}
 .pit {
   min-height: calc(100vh - 100px);
   background-color: white;

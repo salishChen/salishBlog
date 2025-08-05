@@ -27,5 +27,8 @@ onMounted(() => {
   float: right;
   background-color: #FFFFFF;
 }
+.dark .tag-cloud-container{
+  background-color: rgba(51, 51, 51, 0.4);;
+}
 
 </style>
