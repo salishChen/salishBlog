@@ -61,7 +61,7 @@
         </el-col>
         <el-col :span="22">
           <el-form-item label="博文内容" prop="content">
-            <Markdown v-if="form.contentType==1" :content.sync="form.content" :save="save" height="800px"></Markdown>
+            <Markdown v-if="form.contentType==1"  v-model:content="form.content" :save="save" height="800px"/>
             <!--            <v-md-editor v-if="form.contentType==1"   @upload-image="handleUploadImage" ></v-md-editor>-->
             <Editor v-if="form.contentType==2||(form.contentType==''||form.contentType==undefined)"
                     v-model="form.content" :classs="'avatar-uploader'" :minHeight="150"/>
@@ -88,7 +88,7 @@ import {addBlog, updateBlog, getBlog} from "@/api/business/blog";
 import Markdown from "@/components/Markdowm";
 import useTagsViewStore from '@/store/modules/tagsView'
 
-const { proxy } = getCurrentInstance();
+const {proxy} = getCurrentInstance();
 const route = useRoute()
 const router = useRouter()
 
@@ -117,7 +117,7 @@ const data = reactive({
     title: [{required: true, message: '请输入标题', trigger: 'blur'}],
     blogType: [{required: true, message: '请选择博客类型', trigger: 'change'}],
     contentType: [{required: true, message: '请选择内容类型', trigger: 'change'}],
-    content: [{required: true, message: '请输入博文内容', trigger: ['blur', 'change']}],
+    content: [{required: true, message: '请输入博文内容', trigger: 'blur'}],
   },
 })
 
