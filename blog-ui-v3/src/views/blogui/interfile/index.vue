@@ -115,6 +115,10 @@ watch(isTail, (newValue) => {
 .interfile .el-divider__text {
   background-color: #f1f1f1;
 }
+.dark .interfile .el-divider__text {
+  background-color: #333;
+  opacity:0.8;
+}
 </style>
 <style src="@/style/blog.scss" scoped>
 

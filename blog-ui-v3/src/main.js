@@ -140,9 +140,6 @@ VMdEditor.Codemirror = Codemirror;
 VMdEditor.use(githubTheme, {
   Hljs: hljs,
 });
-VMdPreview.use(githubTheme, {
-  Hljs: hljs,
-});
 
 Vue.use(VMdEditor)
 Vue.use(VMdPreview)

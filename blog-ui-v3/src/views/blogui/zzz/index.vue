@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <div :style="{columnCount:columnsNum}" class="column" v-loading="loading">
+<!--    <div v-if="false" :style="{columnCount:columnsNum}" class="column" v-loading="loading">
       <div class="zzz-container" v-if="showList.length>0" v-for="item in showList" @click="openBlog(item.id)">
         <div style="display:block;">
           <img class="zzz-cover" :src="item.cover">
@@ -11,6 +11,22 @@
         </div>
         <div class="blog-title">{{ item.title }}</div>
       </div>
+    </div>-->
+
+    <div class="column">
+      <div :style="{width:`calc(${100/columnsNum}% - 5px)`,display:'inline-block',marginLeft:`${index===1?0:20}px`}" v-for="index in columnsNum">
+        <div class="zzz-container" v-for="item in columnsMap['column'+(index-1)]" @click="openBlog(item.id)">
+          <div style="display:block;">
+            <img class="zzz-cover" :src="item.cover">
+          </div>
+          <div>
+            <BlogTag v-for="tagId in item.tagIds" :tag-color="tags[tagId].tagColor" :tag-name="tags[tagId].tag"
+                     :tag-id="tagId"/>
+          </div>
+          <div class="blog-title">{{ item.title }}</div>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -24,6 +40,7 @@ import useSettingsStore from '@/store/modules/settings'
 const router = useRouter()
 
 import {infiniteScroll} from "@/views/dashboard/mixins/infiniteScroll";
+import {useRouter} from "vue-router";
 
 const {isTail} = infiniteScroll()
 
@@ -44,6 +61,7 @@ const isLoading = ref(true)
 const tags = ref({})
 const blogList = ref([])
 const showList = ref([])
+const columnsMap = ref({})
 
 const columnsNum = ref(5)
 
@@ -62,7 +80,7 @@ function getList() {
   loading.value = true;
   listBlogInfo(queryParams.value).then(response => {
     blogList.value = response.rows;
-    showList.value = getColumnsList(blogList.value, columnsNum.value)
+    getColumnsList(blogList.value, columnsNum.value)
     total.value = response.total;
     loading.value = false;
   });
@@ -73,8 +91,7 @@ function getLastPage() {
     isLoading.value = false
     queryParams.value.pageNum = queryParams.value.pageNum + 1
     listBlogInfo(queryParams.value).then(response => {
-      blogList.value = blogList.value.concat(response.rows)
-      showList.value = getColumnsList(blogList.value, columnsNum.value)
+      getColumnsList(response.rows, columnsNum.value)
       total.value = response.total;
       isLoading.value = true;
     });
@@ -82,16 +99,21 @@ function getLastPage() {
 }
 
 function getColumnsList(list, columnsNum) {
-  const arrObject = {};
-  for (let i = 0; i < columnsNum; i++) {
-    arrObject[i] = []; // 创建空的对象数组
+  // const arrObject = {};
+  // for (let i = 0; i < columnsNum; i++) {
+  //   arrObject[i] = []; // 创建空的对象数组
+  // }
+  // list.forEach((element, index) => arrObject[index % columnsNum].push(element));
+  // const cloGapList = [];
+  // for (let key in arrObject) {
+  //   cloGapList.push(...arrObject[key])
+  // }
+  //
+  // return cloGapList;
+  for (let i = 0; i < list.length; i++) {
+    let number = i%columnsNum;
+    columnsMap.value["column" + number].push(list[i])
   }
-  list.forEach((element, index) => arrObject[index % columnsNum].push(element));
-  const cloGapList = [];
-  for (let key in arrObject) {
-    cloGapList.push(...arrObject[key])
-  }
-  return cloGapList;
 }
 
 function openBlog(id) {
@@ -100,6 +122,9 @@ function openBlog(id) {
 
 pageConfig()
 onMounted(() => {
+  for (let i = 0; i < columnsNum.value; i++) {
+    columnsMap.value["column" + i] = []
+  }
   nextTick(() => {
     let innerWidth = window.innerWidth;
     if (innerWidth < 992) {
@@ -133,7 +158,8 @@ watch(isTail, (newValue) => {
 <style scoped>
 .column {
   text-align: center;
-  margin: 10px
+  margin: 10px;
+  display: flex;
 }
 
 .dark .zzz-container {

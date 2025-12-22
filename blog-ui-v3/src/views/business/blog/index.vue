@@ -1,13 +1,14 @@
 <template>
   <div class="app-container">
-    <el-form class="app-search card" :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form class="app-search card" :model="queryParams" ref="queryFormRef" :inline="true" v-show="showSearch"
+             label-width="68px">
       <el-form-item label="标题" prop="title">
         <el-input
             v-model="queryParams.title"
             placeholder="请输入标题"
             clearable
             size="default"
-            @keyup.enter.native="handleQuery"
+            @keyup.enter="handleQuery"
         />
       </el-form-item>
       <el-form-item label="博客类型" prop="blogType">
@@ -78,7 +79,8 @@
           >导出
           </el-button>
         </el-col>
-        <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
+        <right-toolbar :showSearch="showSearch" @update:showSearch="showSearch = $event"
+                       @queryTable="getList"></right-toolbar>
       </el-row>
 
       <el-table v-loading="loading" :data="blogList" @selection-change="handleSelectionChange">
@@ -88,8 +90,8 @@
         <el-table-column label="标签" align="center" prop="tagId">
           <template #default="scope">
             <template v-if="scope.row.tagId!='' && scope.row.tagId!=undefined">
-              <BlogTag v-for="tagid in scope.row.tagId.split(',')" :tag-color="tags[tagid].tagColor"
-                       :tag-name="tags[tagid].tag"/>
+              <BlogTag v-for="tagid in scope.row.tagId.split(',')" :key="tagid" :tag-color="tags[tagid]?.tagColor"
+                       :tag-name="tags[tagid]?.tag"/>
             </template>
           </template>
         </el-table-column>
@@ -119,160 +121,156 @@
       <pagination
           v-show="total>0"
           :total="total"
-          :page.sync="queryParams.pageNum"
-          :limit.sync="queryParams.pageSize"
+          v-model:page="queryParams.pageNum"
+          v-model:limit="queryParams.pageSize"
           @pagination="getList"
       />
     </div>
   </div>
 </template>
 
-<script>
-import {listBlog, delBlog, exportBlog} from "@/api/business/blog";
-import Editor from '@/components/Editor';
-import {listTag} from "@/api/business/tag";
+<script setup>
+import {ref, reactive} from 'vue'
+import {useRouter} from 'vue-router'
+import {ElMessage, ElMessageBox} from 'element-plus'
+import {listBlog, delBlog, exportBlog} from "@/api/business/blog"
+import {listTag} from "@/api/business/tag"
+import {getDicts} from "@/api/system/dict/data"
+import BlogTag from '@/components/Tag/index.vue'
 
-export default {
-  name: "Blog",
-  components: {
-    Editor,
-  },
-  data() {
-    return {
-      // 遮罩层
-      loading: true,
-      // 选中数组
-      ids: [],
-      // 非单个禁用
-      single: true,
-      // 非多个禁用
-      multiple: true,
-      // 显示搜索条件
-      showSearch: true,
-      // 总条数
-      total: 0,
-      // 博客表格数据
-      blogList: [],
-      tagsOptions: [],
-      blogTypeOptions: [],
-      tags: {},
-      // 查询参数
-      queryParams: {
-        pageNum: 1,
-        pageSize: 10,
-        title: undefined,
-        tagId: undefined,
-      },
-    };
-  },
-  created() {
-    this.getDicts("blog_type").then(response => {
-      this.blogTypeOptions = response.data;
-    });
-    listTag().then(response => {
-      this.tagsOptions = response.rows;
-      this.tagsOptions.forEach(item => {
-        this.tags[item.id] = item;
-      })
-    });
-    // this.getList();
-  },
-  mounted() {
-    this.getList();
-  },
-  activated() {
-    this.getList();
-  },
-  methods: {
-    blogTypeFormat(row, column) {
-      return this.selectDictLabel(this.blogTypeOptions, row.blogType);
-    },
-    /** 查询博客列表 */
-    getList() {
-      this.loading = true;
-      listBlog(this.queryParams).then(response => {
-        this.blogList = response.rows;
-        this.total = response.total;
-        this.loading = false;
-      });
-    },
-    // 取消按钮
-    cancel() {
-      this.open = false;
-      this.reset();
-    },
-    // 表单重置
-    reset() {
-      this.form = {
-        id: undefined,
-        title: undefined,
-        cover: undefined,
-        summary: undefined,
-        content: undefined,
-        tagId: undefined,
-        blogType: undefined,
-        contentType: undefined,
-        createTime: undefined,
-        createBy: undefined,
-        updateTime: undefined,
-        updateBy: undefined,
-        isDelete: undefined,
-      };
-      this.resetForm("form");
-    },
-    /** 搜索按钮操作 */
-    handleQuery() {
-      this.queryParams.pageNum = 1;
-      this.getList();
-    },
-    /** 重置按钮操作 */
-    resetQuery() {
-      this.resetForm("queryForm");
-      this.handleQuery();
-    },
-    // 多选框选中数据
-    handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.id)
-      this.single = selection.length !== 1
-      this.multiple = !selection.length
-    },
-    /** 新增按钮操作 */
-    handleAdd() {
-      this.$router.push({path: "/blogs/editBlog"});
-    },
-    /** 修改按钮操作 */
-    handleUpdate(row) {
-      this.reset();
-      const id = row.id || this.ids
-      this.$router.push({path: "/blogs/editBlog", query: {id: id}});
-    },
-    /** 删除按钮操作 */
-    handleDelete(row) {
-      const ids = row.id || this.ids;
-      this.$confirm('是否确认删除博客编号为"' + ids + '"的数据项?', "警告", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      }).then(function () {
-        return delBlog(ids);
-      }).then(() => {
-        this.getList();
-        this.msgSuccess("删除成功");
-      })
-    },
-    /** 导出按钮操作 */
-    handleExport() {
-      const queryParams = this.queryParams;
-      this.$confirm('是否确认导出所有博客数据项?', "警告", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      }).then(function () {
-        return exportBlog(queryParams);
-      }).then(response => {
-        this.download(response.msg);
-      })
-    }
+// 定义响应式数据
+const loading = ref(true)
+const ids = ref([])
+const single = ref(true)
+const multiple = ref(true)
+const showSearch = ref(true)
+const total = ref(0)
+const blogList = ref([])
+const tagsOptions = ref([])
+const blogTypeOptions = ref([])
+const tags = ref({})
+const queryFormRef = ref(null)
+
+// 查询参数
+const queryParams = reactive({
+  pageNum: 1,
+  pageSize: 10,
+  title: undefined,
+  tagId: undefined,
+  blogType: undefined
+})
+
+// 路由实例
+const router = useRouter()
+
+// 格式化博客类型显示
+const blogTypeFormat = (row, column) => {
+  return selectDictLabel(blogTypeOptions.value, row.blogType)
+}
+
+// 获取字典标签
+const selectDictLabel = (datas, value) => {
+  if (value === undefined) {
+    return ""
   }
-};
+  var actions = []
+  Object.keys(datas).some((key) => {
+    if (datas[key].dictValue === ('' + value)) {
+      actions.push(datas[key].dictLabel)
+      return true
+    }
+  })
+  if (actions.length === 0) {
+    actions.push(value)
+  }
+  return actions.join('')
+}
+
+// 获取博客列表
+const getList = () => {
+  loading.value = true
+  listBlog(queryParams).then(response => {
+    blogList.value = response.rows
+    total.value = response.total
+    loading.value = false
+  })
+}
+
+// 搜索按钮操作
+const handleQuery = () => {
+  queryParams.pageNum = 1
+  getList()
+}
+
+// 重置按钮操作
+const resetQuery = () => {
+  if (queryFormRef.value) {
+    queryFormRef.value.resetFields()
+  }
+  handleQuery()
+}
+
+// 多选框选中数据
+const handleSelectionChange = (selection) => {
+  ids.value = selection.map(item => item.id)
+  single.value = selection.length !== 1
+  multiple.value = !selection.length
+}
+
+// 新增按钮操作
+const handleAdd = () => {
+  router.push({path: "/blogs/editBlog"})
+}
+
+// 修改按钮操作
+const handleUpdate = (row) => {
+  const id = row.id || ids.value
+  router.push({path: "/blogs/editBlog", query: {id: id}})
+}
+
+// 删除按钮操作
+const handleDelete = (row) => {
+  const deleteIds = row.id || ids.value
+  ElMessageBox.confirm('是否确认删除博客编号为"' + deleteIds + '"的数据项?', "警告", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    type: "warning"
+  }).then(() => {
+    return delBlog(deleteIds)
+  }).then(() => {
+    getList()
+    ElMessage.success("删除成功")
+  }).catch(() => {
+  })
+}
+
+// 导出按钮操作
+const handleExport = () => {
+  ElMessageBox.confirm('是否确认导出所有博客数据项?', "警告", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    type: "warning"
+  }).then(() => {
+    return exportBlog(queryParams)
+  }).then(response => {
+    // 这里假设有一个下载方法，根据实际项目情况调整
+    // download(response.msg)
+  }).catch(() => {
+  })
+}
+
+// 组件创建时获取字典和标签数据
+getDicts("blog_type").then(response => {
+  blogTypeOptions.value = response.data
+})
+
+listTag().then(response => {
+  tagsOptions.value = response.rows
+  tagsOptions.value.forEach(item => {
+    tags.value[item.id] = item
+  })
+})
+
+// 组件激活时获取列表
+getList()
 </script>

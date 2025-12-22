@@ -4,7 +4,7 @@
       <div class="blog-content-title">{{ blogContent.title }}</div>
       <div class="blog-content-summary">简介：{{ blogContent.summary }}</div>
       <div class="blog-content-tag">标签：
-        <div v-if="blogContent.tagId!='' && blogContent.tagId!=undefined" v-for="tagId in blogContent.tagIds">
+        <div v-if="blogContent.tagId!=='' && blogContent.tagId!==undefined" v-for="tagId in blogContent.tagIds">
           <BlogTag :tag-color="tags[tagId].tagColor" :tag-name="tags[tagId].tag" :tag-id="tagId"/>
         </div>
       </div>
@@ -21,18 +21,8 @@ import {getBlog, listTag} from "@/api/business/salish";
 import BlogTag from "@/components/Tag";
 
 import {ref} from "vue";
+import {useRoute} from "vue-router";
 const route = useRoute();
-
-const data = reactive({
-  queryParams:{
-    pageNum: 1,
-    pageSize: 10,
-    title: undefined,
-    tagId: undefined,
-  },
-  total:0
-})
-const {queryParams,total} = toRefs(data);
 
 const tags = ref({});
 const blogContent = ref({});

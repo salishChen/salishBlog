@@ -12,8 +12,11 @@ import router from "@/router";
 const route = useRoute()
 import useSettingsStore from '@/store/modules/settings'
 const settingsStore = useSettingsStore()
-
+import {useToggle,useDark} from "@vueuse/core";
+import {useRoute} from "vue-router";
+const isDark = useDark()
 async function toWorkspace() {
+  isDark.value = false;
   useTagsViewStore().delView(route)
   await router.replace({path: "/index"})
   let settings = JSON.parse(localStorage.getItem('layout-setting'));

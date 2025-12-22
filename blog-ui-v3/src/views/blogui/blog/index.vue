@@ -10,7 +10,7 @@
           <div class="blog-summary">
             {{ item.summary }}
           </div>
-          <template v-if="item.tagId!='' && item.tagId!=undefined">
+          <template v-if="item.tagId!=='' && item.tagId!==undefined">
             <div class="left-block">
               <div v-for="tagId in item.tagIds">
                 <BlogTag :tag-color="tags[tagId].tagColor" :tag-name="tags[tagId].tag" :tag-id="tagId"/>
@@ -36,6 +36,7 @@ import useSettingsStore from '@/store/modules/settings'
 const router = useRouter()
 
 import {infiniteScroll} from "@/views/dashboard/mixins/infiniteScroll";
+import {useRouter} from "vue-router";
 
 const {isTail} = infiniteScroll()
 

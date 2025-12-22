@@ -1,5 +1,5 @@
 <template>
-  <div class="blog-tag" :style="{backgroundColor:tagColor}" @click.stop="searchTag">{{tagName}}</div>
+  <div class="blog-tag" :style="{backgroundColor:props.tagColor}" @click.stop="searchTag">{{tagName}}</div>
 </template>
 
 <script setup>

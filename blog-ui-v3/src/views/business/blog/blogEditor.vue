@@ -94,7 +94,6 @@ const router = useRouter()
 
 const blogId = ref('')
 const imgUrl = ref('')
-console.log(import.meta.env.VITE_APP_BASE_API)
 const uploadUrl = ref(import.meta.env.VITE_APP_BASE_API + "/common/upload")
 const headers = ref({Authorization: "Bearer " + getToken()})
 const tagsOptions = ref([])

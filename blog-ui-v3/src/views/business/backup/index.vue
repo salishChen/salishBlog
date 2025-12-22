@@ -1,7 +1,6 @@
 <template>
   <div class="app-container">
-
-    <div  class="app-content card">
+    <div class="app-content card">
       <el-row :gutter="10" class="mb8">
         <el-col :span="1.5">
           <el-button
@@ -49,7 +48,8 @@
           >导出
           </el-button>
         </el-col>
-        <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
+        <right-toolbar :showSearch="showSearch" @update:showSearch="showSearch = $event"
+                       @queryTable="getList"></right-toolbar>
       </el-row>
 
       <el-table v-loading="loading" :data="backupList" @selection-change="handleSelectionChange">
@@ -57,8 +57,6 @@
         <el-table-column label="id" align="center" prop="id" v-if="false"/>
         <el-table-column label="数据库名称" align="center" prop="sqlName"/>
         <el-table-column label="数据库ip" align="center" prop="sqlIp"/>
-        <!--      <el-table-column label="用户名" align="center" prop="sqlUsername"/>-->
-        <!--      <el-table-column label="密码" align="center" prop="sqlPassword"/>-->
         <el-table-column label="定时规则" align="center" prop="sqlCron"/>
         <el-table-column label="备份数量限制" align="center" prop="fileLimit"/>
         <el-table-column label="数据库类型" align="center" prop="type" :formatter="typeFormat"/>
@@ -95,16 +93,15 @@
       <pagination
           v-show="total>0"
           :total="total"
-          :page.sync="queryParams.pageNum"
-          :fileLimit.sync="queryParams.pageSize"
+          :page="queryParams.pageNum"
+          :limit="queryParams.pageSize"
           @pagination="getList"
       />
     </div>
-    
 
     <!-- 添加或修改数据库备份对话框 -->
     <el-dialog :title="title" v-model="open" width="400px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="100px">
+      <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
         <el-form-item label="数据库名称" prop="sqlName">
           <el-input v-model="form.sqlName" placeholder="请输入数据库名称"/>
         </el-form-item>
@@ -126,193 +123,212 @@
         <el-form-item label="数据库类型" prop="type">
           <el-select style="width: 100%" v-model="form.type" placeholder="请选择数据库类型">
             <el-option
-              v-for="dict in typeOptions"
-              :key="dict.dictValue"
-              :label="dict.dictLabel"
-              :value="dict.dictValue"
+                v-for="dict in typeOptions"
+                :key="dict.dictValue"
+                :label="dict.dictLabel"
+                :value="dict.dictValue"
             ></el-option>
           </el-select>
         </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm">确 定</el-button>
-        <el-button @click="cancel">取 消</el-button>
-      </div>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button type="primary" @click="submitForm">确 定</el-button>
+          <el-button @click="cancel">取 消</el-button>
+        </div>
+      </template>
     </el-dialog>
   </div>
 </template>
 
-<script>
-import {listBackup, getBackup, delBackup, addBackup, updateBackup, exportBackup,runBackup} from "@/api/business/backup";
+<script setup>
+import {ref, reactive} from 'vue'
+import {ElMessage, ElMessageBox} from 'element-plus'
+import {listBackup, getBackup, delBackup, addBackup, updateBackup, exportBackup, runBackup} from "@/api/business/backup"
+import {getDicts} from "@/api/system/dict/data.js";
 
-export default {
-  name: "Backup",
-  components: {},
-  data() {
-    return {
-      // 遮罩层
-      loading: true,
-      // 选中数组
-      ids: [],
-      // 非单个禁用
-      single: true,
-      // 非多个禁用
-      multiple: true,
-      // 显示搜索条件
-      showSearch: true,
-      // 总条数
-      total: 0,
-      // 数据库备份表格数据
-      backupList: [],
-      // 弹出层标题
-      title: "",
-      // 是否显示弹出层
-      open: false,
-      // 数据库类型字典
-      typeOptions: [],
-      // 查询参数
-      queryParams: {
-        pageNum: 1,
-        pageSize: 10,
-      },
-      // 表单参数
-      form: {},
-      // 表单校验
-      rules: {}
-    };
-  },
-  created() {
-    this.getList();
-    this.getDicts("sql_type").then(response => {
-      this.typeOptions = response.data;
-    });
-  },
-  methods: {
-    /** 查询数据库备份列表 */
-    getList() {
-      this.loading = true;
-      listBackup(this.queryParams).then(response => {
-        this.backupList = response.rows;
-        this.total = response.total;
-        this.loading = false;
-      });
-    },
-    // 数据库类型字典翻译
-    typeFormat(row, column) {
-      return this.selectDictLabel(this.typeOptions, row.type);
-    },
-    // 取消按钮
-    cancel() {
-      this.open = false;
-      this.reset();
-    },
-    // 表单重置
-    reset() {
-      this.form = {
-        id: undefined,
+// 定义响应式数据
+const loading = ref(true)
+const ids = ref([])
+const single = ref(true)
+const multiple = ref(true)
+const showSearch = ref(true)
+const total = ref(0)
+const backupList = ref([])
+const title = ref("")
+const open = ref(false)
+const typeOptions = ref([])
+const formRef = ref(null)
 
-        sqlIp: undefined,
+// 查询参数
+const queryParams = reactive({
+  pageNum: 1,
+  pageSize: 10,
+})
 
-        sqlUsername: undefined,
+// 表单参数
+const form = reactive({
+  id: undefined,
+  sqlName: undefined,
+  sqlIp: undefined,
+  sqlUsername: undefined,
+  sqlPassword: undefined,
+  sqlCron: undefined,
+  fileLimit: undefined,
+  type: undefined,
+})
 
-        sqlPassword: undefined,
+// 表单校验规则
+const rules = {}
 
-        sqlCron: undefined,
+// 数据库类型字典翻译
+const typeFormat = (row, column) => {
+  return selectDictLabel(typeOptions.value, row.type)
+}
 
-        fileLimit: undefined,
-
-        type: undefined,
-
-      };
-      this.resetForm("form");
-    },
-    /** 搜索按钮操作 */
-    handleQuery() {
-      this.queryParams.pageNum = 1;
-      this.getList();
-    },
-    /** 重置按钮操作 */
-    resetQuery() {
-      this.resetForm("queryForm");
-      this.handleQuery();
-    },
-    // 多选框选中数据
-    handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.id)
-      this.single = selection.length !== 1
-      this.multiple = !selection.length
-    },
-    /** 新增按钮操作 */
-    handleAdd() {
-      this.reset();
-      this.open = true;
-      this.title = "添加数据库备份";
-    },
-    /** 修改按钮操作 */
-    handleRun(row) {
-      this.reset();
-      const id = row.id || this.ids
-      runBackup({id:id}).then(response => {
-        console.log(response)
-      });
-    },
-    /** 修改按钮操作 */
-    handleUpdate(row) {
-      this.reset();
-      const id = row.id || this.ids
-      getBackup(id).then(response => {
-        this.form = response.data;
-        this.open = true;
-        this.title = "修改数据库备份";
-      });
-    },
-    /** 提交按钮 */
-    submitForm() {
-      this.$refs["form"].validate(valid => {
-        if (valid) {
-          if (this.form.id != null) {
-            updateBackup(this.form).then(response => {
-              this.msgSuccess("修改成功");
-              this.open = false;
-              this.getList();
-            });
-          } else {
-            addBackup(this.form).then(response => {
-              this.msgSuccess("新增成功");
-              this.open = false;
-              this.getList();
-            });
-          }
-        }
-      });
-    },
-    /** 删除按钮操作 */
-    handleDelete(row) {
-      const ids = row.id || this.ids;
-      this.$confirm('是否确认删除数据库备份编号为"' + ids + '"的数据项?', "警告", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      }).then(function () {
-        return delBackup(ids);
-      }).then(() => {
-        this.getList();
-        this.msgSuccess("删除成功");
-      })
-    },
-    /** 导出按钮操作 */
-    handleExport() {
-      const queryParams = this.queryParams;
-      this.$confirm('是否确认导出所有数据库备份数据项?', "警告", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      }).then(function () {
-        return exportBackup(queryParams);
-      }).then(response => {
-        this.download(response.msg);
-      })
-    }
+// 获取字典标签
+const selectDictLabel = (datas, value) => {
+  if (value === undefined) {
+    return ""
   }
-};
+  var actions = []
+  Object.keys(datas).some((key) => {
+    if (datas[key].dictValue == ('' + value)) {
+      actions.push(datas[key].dictLabel)
+      return true
+    }
+  })
+  if (actions.length === 0) {
+    actions.push(value)
+  }
+  return actions.join('')
+}
+
+// 查询数据库备份列表
+const getList = () => {
+  loading.value = true
+  listBackup(queryParams).then(response => {
+    backupList.value = response.rows
+    total.value = response.total
+    loading.value = false
+  })
+}
+
+// 取消按钮
+const cancel = () => {
+  open.value = false
+  reset()
+}
+
+// 表单重置
+const reset = () => {
+  Object.assign(form, {
+    id: undefined,
+    sqlName: undefined,
+    sqlIp: undefined,
+    sqlUsername: undefined,
+    sqlPassword: undefined,
+    sqlCron: undefined,
+    fileLimit: undefined,
+    type: undefined,
+  })
+  if (formRef.value) {
+    formRef.value.resetFields()
+  }
+}
+
+// 多选框选中数据
+const handleSelectionChange = (selection) => {
+  ids.value = selection.map(item => item.id)
+  single.value = selection.length !== 1
+  multiple.value = !selection.length
+}
+
+// 新增按钮操作
+const handleAdd = () => {
+  reset()
+  open.value = true
+  title.value = "添加数据库备份"
+}
+
+// 手动备份操作
+const handleRun = (row) => {
+  const id = row.id || ids.value
+  runBackup({id: id}).then(response => {
+    console.log(response)
+  })
+}
+
+// 修改按钮操作
+const handleUpdate = (row) => {
+  reset()
+  const id = row.id || ids.value
+  getBackup(id).then(response => {
+    Object.assign(form, response.data)
+    open.value = true
+    title.value = "修改数据库备份"
+  })
+}
+
+// 提交按钮
+const submitForm = () => {
+  if (formRef.value) {
+    formRef.value.validate((valid) => {
+      if (valid) {
+        if (form.id != null) {
+          updateBackup(form).then(response => {
+            ElMessage.success("修改成功")
+            open.value = false
+            getList()
+          })
+        } else {
+          addBackup(form).then(response => {
+            ElMessage.success("新增成功")
+            open.value = false
+            getList()
+          })
+        }
+      }
+    })
+  }
+}
+
+// 删除按钮操作
+const handleDelete = (row) => {
+  const deleteIds = row.id || ids.value
+  ElMessageBox.confirm('是否确认删除数据库备份编号为"' + deleteIds + '"的数据项?', "警告", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    type: "warning"
+  }).then(() => {
+    return delBackup(deleteIds)
+  }).then(() => {
+    getList()
+    ElMessage.success("删除成功")
+  }).catch(() => {
+  })
+}
+
+// 导出按钮操作
+const handleExport = () => {
+  ElMessageBox.confirm('是否确认导出所有数据库备份数据项?', "警告", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    type: "warning"
+  }).then(() => {
+    return exportBackup(queryParams)
+  }).then(response => {
+    // 假设有一个下载方法
+    // download(response.msg)
+  }).catch(() => {
+  })
+}
+
+// 获取字典数据
+getDicts("sql_type").then(response => {
+  typeOptions.value = response.data
+})
+
+// 组件挂载后获取列表
+getList()
 </script>

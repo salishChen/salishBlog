@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-form class="app-search card" :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch"
+    <el-form class="app-search card" :model="queryParams" ref="queryFormRef" :inline="true" v-show="showSearch"
              label-width="68px">
       <el-form-item label="标签名" prop="tag">
         <el-input
@@ -8,7 +8,7 @@
             placeholder="请输入标签"
             clearable
             size="default"
-            @keyup.enter.native="handleQuery"
+            @keyup.enter="handleQuery"
         />
       </el-form-item>
       <el-form-item>
@@ -64,7 +64,8 @@
           >导出
           </el-button>
         </el-col>
-        <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
+        <right-toolbar :showSearch="showSearch" @update:showSearch="showSearch = $event"
+                       @queryTable="getList"></right-toolbar>
       </el-row>
 
       <el-table v-loading="loading" :data="tagList" @selection-change="handleSelectionChange">
@@ -76,7 +77,6 @@
           </template>
         </el-table-column>
         <el-table-column label="使用次数" align="center" prop="times" width="180"/>
-        <!--          <span>{{ parseTime(scope.row.times, '{y}-{m}-{d}') }}</span>-->
         <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
           <template #default="scope">
             <el-button
@@ -102,14 +102,14 @@
       <pagination
           v-show="total>0"
           :total="total"
-          :page.sync="queryParams.pageNum"
-          :limit.sync="queryParams.pageSize"
+          :page="queryParams.pageNum"
+          :limit="queryParams.pageSize"
           @pagination="getList"
       />
     </div>
     <!-- 添加或修改标签对话框 -->
     <el-dialog :title="title" v-model="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+      <el-form ref="formRef" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="标签" prop="tag">
           <el-input v-model="form.tag" placeholder="请输入标签"/>
         </el-form-item>
@@ -121,181 +121,194 @@
           </el-color-picker>
         </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm">确 定</el-button>
-        <el-button @click="cancel">取 消</el-button>
-      </div>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button type="primary" @click="submitForm">确 定</el-button>
+          <el-button @click="cancel">取 消</el-button>
+        </div>
+      </template>
     </el-dialog>
   </div>
 </template>
 
-<script>
-import {listTag, getTag, delTag, addTag, updateTag, exportTag} from "@/api/business/tag";
+<script setup>
+import {ref, reactive, onMounted} from 'vue'
+import {ElMessage, ElMessageBox} from 'element-plus'
+import {listTag, getTag, delTag, addTag, updateTag, exportTag} from "@/api/business/tag"
 
-export default {
-  name: "Tag",
-  components: {},
-  data() {
-    return {
-      // 遮罩层
-      loading: true,
-      // 选中数组
-      ids: [],
-      // 非单个禁用
-      single: true,
-      // 非多个禁用
-      multiple: true,
-      // 显示搜索条件
-      showSearch: true,
-      // 总条数
-      total: 0,
-      // 标签表格数据
-      tagList: [],
-      // 弹出层标题
-      title: "",
-      // 是否显示弹出层
-      open: false,
-      // 查询参数
-      queryParams: {
-        pageNum: 1,
-        pageSize: 10,
-        tag: undefined,
-        tagColor: undefined,
-        times: undefined,
-      },
-      // 表单参数
-      form: {},
-      // 表单校验
-      rules: {},
-      predefineColors: [
-        '#ff4500',
-        '#ff8c00',
-        '#ffd700',
-        '#90ee90',
-        '#00ced1',
-        '#1e90ff',
-        '#c71585',
-        'rgba(255, 69, 0, 0.68)',
-        'rgb(255, 120, 0)',
-        'hsv(51, 100, 98)',
-        'hsva(120, 40, 94, 0.5)',
-        'hsl(181, 100%, 37%)',
-        'hsla(209, 100%, 56%, 0.73)',
-        '#c7158577'
-      ]
-    };
-  },
-  created() {
-    this.getList();
-  },
-  methods: {
-    /** 查询标签列表 */
-    getList() {
-      this.loading = true;
-      listTag(this.queryParams).then(response => {
-        this.tagList = response.rows;
-        this.total = response.total;
-        this.loading = false;
-      });
-    },
-    // 取消按钮
-    cancel() {
-      this.open = false;
-      this.reset();
-    },
-    // 表单重置
-    reset() {
-      this.form = {
-        id: undefined,
+// 定义响应式数据
+const loading = ref(true)
+const ids = ref([])
+const single = ref(true)
+const multiple = ref(true)
+const showSearch = ref(true)
+const total = ref(0)
+const tagList = ref([])
+const title = ref("")
+const open = ref(false)
+const queryFormRef = ref(null)
+const formRef = ref(null)
 
-        tag: undefined,
+// 查询参数
+const queryParams = reactive({
+  pageNum: 1,
+  pageSize: 10,
+  tag: undefined,
+  tagColor: undefined,
+  times: undefined,
+})
 
-        tagColor: undefined,
+// 表单参数
+const form = reactive({
+  id: undefined,
+  tag: undefined,
+  tagColor: undefined,
+  times: undefined,
+})
 
-        times: undefined,
+// 表单校验规则
+const rules = {}
 
-      };
-      this.resetForm("form");
-    },
-    /** 搜索按钮操作 */
-    handleQuery() {
-      this.queryParams.pageNum = 1;
-      this.getList();
-    },
-    /** 重置按钮操作 */
-    resetQuery() {
-      this.resetForm("queryForm");
-      this.handleQuery();
-    },
-    // 多选框选中数据
-    handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.id)
-      this.single = selection.length !== 1
-      this.multiple = !selection.length
-    },
-    /** 新增按钮操作 */
-    handleAdd() {
-      this.reset();
-      this.open = true;
-      this.title = "添加标签";
-    },
-    /** 修改按钮操作 */
-    handleUpdate(row) {
-      this.reset();
-      const id = row.id || this.ids
-      getTag(id).then(response => {
-        this.form = response.data;
-        this.open = true;
-        this.title = "修改标签";
-      });
-    },
-    /** 提交按钮 */
-    submitForm() {
-      this.$refs["form"].validate(valid => {
-        if (valid) {
-          if (this.form.id != null) {
-            updateTag(this.form).then(response => {
-              this.msgSuccess("修改成功");
-              this.open = false;
-              this.getList();
-            });
-          } else {
-            addTag(this.form).then(response => {
-              this.msgSuccess("新增成功");
-              this.open = false;
-              this.getList();
-            });
-          }
-        }
-      });
-    },
-    /** 删除按钮操作 */
-    handleDelete(row) {
-      const ids = row.id || this.ids;
-      this.$confirm('是否确认删除标签编号为"' + ids + '"的数据项?', "警告", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      }).then(function () {
-        return delTag(ids);
-      }).then(() => {
-        this.getList();
-        this.msgSuccess("删除成功");
-      })
-    },
-    /** 导出按钮操作 */
-    handleExport() {
-      const queryParams = this.queryParams;
-      this.$confirm('是否确认导出所有标签数据项?', "警告", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      }).then(function () {
-        return exportTag(queryParams);
-      }).then(response => {
-        this.download(response.msg);
-      })
-    }
+// 预定义颜色
+const predefineColors = [
+  '#ff4500',
+  '#ff8c00',
+  '#ffd700',
+  '#90ee90',
+  '#00ced1',
+  '#1e90ff',
+  '#c71585',
+  'rgba(255, 69, 0, 0.68)',
+  'rgb(255, 120, 0)',
+  'hsv(51, 100, 98)',
+  'hsva(120, 40, 94, 0.5)',
+  'hsl(181, 100%, 37%)',
+  'hsla(209, 100%, 56%, 0.73)',
+  '#c7158577'
+]
+
+// 查询标签列表
+const getList = () => {
+  loading.value = true
+  listTag(queryParams).then(response => {
+    tagList.value = response.rows
+    total.value = response.total
+    loading.value = false
+  })
+}
+
+// 取消按钮
+const cancel = () => {
+  open.value = false
+  reset()
+}
+
+// 表单重置
+const reset = () => {
+  Object.assign(form, {
+    id: undefined,
+    tag: undefined,
+    tagColor: undefined,
+    times: undefined,
+  })
+  if (formRef.value) {
+    formRef.value.resetFields()
   }
-};
+}
+
+// 搜索按钮操作
+const handleQuery = () => {
+  queryParams.pageNum = 1
+  getList()
+}
+
+// 重置按钮操作
+const resetQuery = () => {
+  if (queryFormRef.value) {
+    queryFormRef.value.resetFields()
+  }
+  handleQuery()
+}
+
+// 多选框选中数据
+const handleSelectionChange = (selection) => {
+  ids.value = selection.map(item => item.id)
+  single.value = selection.length !== 1
+  multiple.value = !selection.length
+}
+
+// 新增按钮操作
+const handleAdd = () => {
+  reset()
+  open.value = true
+  title.value = "添加标签"
+}
+
+// 修改按钮操作
+const handleUpdate = (row) => {
+  reset()
+  const id = row.id || ids.value
+  getTag(id).then(response => {
+    Object.assign(form, response.data)
+    open.value = true
+    title.value = "修改标签"
+  })
+}
+
+// 提交按钮
+const submitForm = () => {
+  if (formRef.value) {
+    formRef.value.validate((valid) => {
+      if (valid) {
+        if (form.id != null) {
+          updateTag(form).then(response => {
+            ElMessage.success("修改成功")
+            open.value = false
+            getList()
+          })
+        } else {
+          addTag(form).then(response => {
+            ElMessage.success("新增成功")
+            open.value = false
+            getList()
+          })
+        }
+      }
+    })
+  }
+}
+
+// 删除按钮操作
+const handleDelete = (row) => {
+  const deleteIds = row.id || ids.value
+  ElMessageBox.confirm('是否确认删除标签编号为"' + deleteIds + '"的数据项?', "警告", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    type: "warning"
+  }).then(() => {
+    return delTag(deleteIds)
+  }).then(() => {
+    getList()
+    ElMessage.success("删除成功")
+  }).catch(() => {
+  })
+}
+
+// 导出按钮操作
+const handleExport = () => {
+  ElMessageBox.confirm('是否确认导出所有标签数据项?', "警告", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    type: "warning"
+  }).then(() => {
+    return exportTag(queryParams)
+  }).then(response => {
+    // 假设有一个下载方法
+    // download(response.msg)
+  }).catch(() => {
+  })
+}
+
+// 组件挂载后获取列表
+getList()
 </script>
