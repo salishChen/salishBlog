@@ -40,7 +40,7 @@ const props = defineProps({
 const emit = defineEmits(['update:content'])
 
 // 数据定义
-const url = import.meta.env.VUE_APP_BASE_API + "/common/upload"
+const url = import.meta.env.VITE_APP_BASE_API + "/common/upload"
 
 // 计算属性
 const blogContent = computed({
